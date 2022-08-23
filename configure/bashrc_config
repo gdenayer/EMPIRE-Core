@@ -19,12 +19,12 @@ fi
 	export EMPIRE_API_LIB_NAME=EMPIRE_API
 	export EMPIRE_LD_LIBRARY_PATH=$EMPIRE_CORE_BASE_DIR/lib
 	export EMPIRE_API_INC_ON_MACHINE=$EMPIRE_CORE_BASE_DIR/EMPIRE_API/src/include/
-	export EMPIRE_API_LIB_ON_MACHINE=$EMPIRE_LD_LIBRARY_PATH/lib$EMPIRE_API_LIB_NAME.a	
+	export EMPIRE_API_LIB_ON_MACHINE=$EMPIRE_LD_LIBRARY_PATH/lib$EMPIRE_API_LIB_NAME.a
 	export EMPIRE_API_LIBSO_ON_MACHINE=$EMPIRE_LD_LIBRARY_PATH/lib$EMPIRE_API_LIB_NAME.so
 	export EMP_PATH=$EMPIRE_CORE_BASE_DIR/bin:$EMP_PATH
-	
+
 # INTEL MPI variables
-	export I_MPI_FABRICS=shm:tcp
+#	export I_MPI_FABRICS=shm:ofi
 	export I_MPI_FAULT_CONTINUE=off
 	echo 'Setting toolchain ICC'
 ######################################################################################
