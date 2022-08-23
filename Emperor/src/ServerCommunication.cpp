@@ -71,7 +71,10 @@ void ServerCommunication::startListening() {
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, *getOwnMPIHandler()); // set own error handler to MPI_COMM_WORLD
     INFO_OUT() << "intra-communicator: " << "MPI_COMM_WORLD" << "---" << hex << MPI_COMM_WORLD << endl;
     int connectionSuccessful = 0;
-    while (1) {
+    int ClientIt = 0;
+    INFO_OUT() << "DEBUG GDN:  startListening WARNING Number of Clients is hardcoded in ServerCommunication::startListening " << endl;
+    while (ClientIt<2) {
+    // while (1) {
         /// set up inter-communicator for a connecting client
         MPI_Status status;
         MPI_Comm interClient = MPI_COMM_NULL;
@@ -116,6 +119,7 @@ void ServerCommunication::startListening() {
             connectionSuccessful = 1;
             MPI_Send(&connectionSuccessful, 1, MPI_INT, 0, 0, interClient);
             INFO_OUT() << "Client " << clientNameS << " connected" << ", inter-communicator: " << hex << interClient << ", intra-communicator: " << hex << world << endl;
+            ClientIt++;
         } else {
             /// Tell client to disconnect
             connectionSuccessful = 0;
@@ -139,9 +143,9 @@ void ServerCommunication::disconnectAllClients() {
     }
     terminateListening = true;
     /// Connect to your self in order to terminate listening
-    MPI_Comm dummy;
-    MPI_Comm_connect((char*) (portName.c_str()), MPI_INFO_NULL, 0, MPI_COMM_WORLD, &dummy);
-    MPI_Comm_disconnect(&dummy);
+    // MPI_Comm dummy;
+    // MPI_Comm_connect((char*) (portName.c_str()), MPI_INFO_NULL, 0, MPI_COMM_WORLD, &dummy);
+    // MPI_Comm_disconnect(&dummy);
     MPI_Close_port((char*) (portName.c_str()));
 }
 
