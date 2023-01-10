@@ -76,8 +76,9 @@ string ClientMetaDatabase::getUserDefinedText(string elementName) {
 	Element *userDefinedBlock = inputFile->FirstChildElement()->FirstChildElement("userDefined");
 	Element *userDefined = userDefinedBlock->FirstChildElement(elementName, false);
 	if (userDefined == NULL) {
-	    cout << "!!!!!Warning in EMPIRE_API (ClientMetaDatabase::getUserDefinedText): user defined text cannot be found!" << endl;
-		return "";
+	    cout << "!!!!!Warning in EMPIRE_API (ClientMetaDatabase::getUserDefinedText): user defined text "
+	    << "\"" << elementName << "\"" << " cannot be found!" << endl;
+	    return "";
 	}
 	return userDefined->GetText();
 }
