@@ -34,6 +34,10 @@ using namespace std;
 /// Lets make a EMPIRE_API object in the global scope
 Empire *empire;
 
+// variable text have to be here defined and not under EMPIRE_API_getUserDefinedText, so that the
+// char pointer of EMPIRE_API_getUserDefinedText points to the correct value in memory.
+string text;
+
 void EMPIRE_API_Connect(char* inputFileName) {
     empire = new Empire();
     empire->initEnvironment(inputFileName);
@@ -41,7 +45,7 @@ void EMPIRE_API_Connect(char* inputFileName) {
 }
 
 char *EMPIRE_API_getUserDefinedText(char *elementName) {
-    string text = empire->getUserDefinedText(elementName);
+    text = empire->getUserDefinedText(elementName);
     return const_cast<char*>(text.c_str());
 }
 
