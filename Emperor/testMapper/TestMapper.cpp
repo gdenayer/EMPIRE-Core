@@ -350,7 +350,7 @@ void TestMapper::doMapping() {
             bool oppositeSurfaceNormal = settingMappers[i].settingMortarMapper.oppositeSurfaceNormal;
             bool dual = settingMappers[i].settingMortarMapper.dual;
             bool enforceConsistency = settingMappers[i].settingMortarMapper.enforceConsistency;
-            mapper = new MortarMapper(numNodesA, numElemsA, numNodesPerElemA, nodeCoorsA, nodeIDsA,
+            mapper = new MortarMapper("mortarMapper", numNodesA, numElemsA, numNodesPerElemA, nodeCoorsA, nodeIDsA,
                     elemTableA, numNodesB, numElemsB, numNodesPerElemB, nodeCoorsB, nodeIDsB,
                     elemTableB, oppositeSurfaceNormal, dual, enforceConsistency);
         } else if (settingMappers[i].type == "nearestNeighborMapper") {

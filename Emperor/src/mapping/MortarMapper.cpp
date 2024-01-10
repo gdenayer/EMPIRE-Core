@@ -39,6 +39,7 @@
 #include "MortarMapper.h"
 #include "Message.h"
 //#include "AuxiliaryFunctions.h"
+#include <fstream>
 #include <iostream>
 #include <stdlib.h>
 #include <set>
@@ -59,12 +60,12 @@ const int MortarMapper::numGPsMassMatrixQuad = 4;
 const int MortarMapper::numGPsOnClipTri = 6;
 const int MortarMapper::numGPsOnClipQuad = 12;
 
-MortarMapper::MortarMapper(int _slaveNumNodes, int _slaveNumElems, const int *_slaveNodesPerElem,
+MortarMapper::MortarMapper(std::string _name, int _slaveNumNodes, int _slaveNumElems, const int *_slaveNodesPerElem,
         const double *_slaveNodeCoors, const int *_slaveNodeNumbers, const int *_slaveElemTable,
         int _masterNumNodes, int _masterNumElems, const int *_masterNodesPerElem,
         const double *_masterNodeCoors, const int *_masterNodeNumbers, const int *_masterElemTable,
         bool _oppositeSurfaceNormal, bool _dual, bool _toEnforceConsistency) :
-        slaveNumNodes(_slaveNumNodes), slaveNumElems(_slaveNumElems), slaveNodesPerElem(
+        name(_name), slaveNumNodes(_slaveNumNodes), slaveNumElems(_slaveNumElems), slaveNodesPerElem(
                 _slaveNodesPerElem), slaveNodeCoors(_slaveNodeCoors), slaveNodeNumbers(
                 _slaveNodeNumbers), slaveElemTable(_slaveElemTable), masterNumNodes(
                 _masterNumNodes), masterNumElems(_masterNumElems), masterNodesPerElem(
@@ -90,6 +91,18 @@ MortarMapper::MortarMapper(int _slaveNumNodes, int _slaveNumElems, const int *_s
         exit(EXIT_FAILURE);
     }
 #endif
+
+    DEBUG_OUT()<<"------------------------------"<<endl;
+    DEBUG_OUT()<<"DEBUG for mapper "<<_name<<endl;
+    DEBUG_OUT()<<"------------------------------"<<endl;
+
+    // Remove debug mapping file
+    string fileName;
+    const string UNDERSCORE = "_";
+    fileName = "mapping_list_NN_points" + UNDERSCORE + name + ".dat";
+    int status;
+    status = remove(fileName.c_str());
+    if (status==0) cout<<"\nThe file "<< fileName << " was deleted successfully!\n"<<endl;
 
     // 1. initialize data that could be used later
     initTables();
@@ -597,6 +610,18 @@ void MortarMapper::enforceConsistency(map<int, double> **sparsityMapC_BA) {
             if (sum < factor[i] * 0.5) { // if the master element is not fully covered by slave elements, use nearest neighbor
                 cout << "WARNING(MortarMapper::enforceConsistency): Nearest neighbor is used for node: ";
                 MortarMath::printPoint(&masterNodeCoors[i*3]);
+                // Writing out the coordinates of that node in a file
+                ofstream dbgmappingfile;
+                string fileName;
+                const string UNDERSCORE = "_";
+                fileName = "mapping_list_NN_points" + UNDERSCORE + name + ".dat";
+                dbgmappingfile.open (fileName.c_str(), ios_base::app);
+                // dbgmappingfile.open ("mapping_list_NN_points.dat.dat", ios_base::app);
+                dbgmappingfile.precision(14);
+                dbgmappingfile.setf(ios::fixed);
+                dbgmappingfile << std::scientific << std::setw(18) << masterNodeCoors[i*3] << " " <<  masterNodeCoors[i*3 + 1 ] << " " <<  masterNodeCoors[i*3 + 2 ] <<"\n";
+                dbgmappingfile.close();
+                //
                 sparsityMapC_BA[i]->clear();
                 double dummy;
                 int nb;

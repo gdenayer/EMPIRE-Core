@@ -27,7 +27,7 @@
 #include "AbstractMesh.h"
 #include "FEMesh.h"
 #include "IGAMesh.h"
-#include "IGAPatchSurface.h" 	
+#include "IGAPatchSurface.h"
 #include "DataField.h"
 #include <iostream>
 #include <assert.h>
@@ -77,7 +77,7 @@ void MapperAdapter::initMortarMapper(bool oppositeSurfaceNormal, bool dual,
 
     assert(mapperImpl == NULL);
 
-    mapperImpl = new MortarMapper(a->numNodes, a->numElems, a->numNodesPerElem, a->nodes,
+    mapperImpl = new MortarMapper(name, a->numNodes, a->numElems, a->numNodesPerElem, a->nodes,
             a->nodeIDs, a->elems, b->numNodes, b->numElems, b->numNodesPerElem, b->nodes,
             b->nodeIDs, b->elems, oppositeSurfaceNormal, dual, enforceConsistency);
 }

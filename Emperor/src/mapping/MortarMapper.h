@@ -49,6 +49,7 @@ class MortarMapper : public AbstractMapper {
 public:
     /***********************************************************************************************
      * \brief Constructor
+     * \param[in] _name The name of the mapper
      * \param[in] _slaveNumNodes number of nodes on slave side
      * \param[in] _slaveNumElems number of elements on slave side
      * \param[in] _slaveNodesPerElem number of nodes for each element (only 3 or 4, enable hybrid mesh)
@@ -68,7 +69,7 @@ public:
      * \param[in] _toEnforceConsistency whether or not to enforce consistency
      * \author Tianyang Wang
      ***********/
-    MortarMapper(int _slaveNumNodes, int _slaveNumElems, const int *_slaveNodesPerElem,
+    MortarMapper(std::string _name, int _slaveNumNodes, int _slaveNumElems, const int *_slaveNodesPerElem,
             const double *_slaveNodeCoors, const int *_slaveNodeNumbers, const int *_slaveElemTable,
             int _masterNumNodes, int _masterNumElems, const int *_masterNodesPerElem,
             const double *_masterNodeCoors, const int *_masterNodeNumbers,
@@ -99,6 +100,8 @@ public:
     static int mapperSetNumThreads;
 
 private:
+    /// Name of the mapper
+    std::string name;
     /// number of nodes on slave side
     int slaveNumNodes;
     /// number of elements on slave side
