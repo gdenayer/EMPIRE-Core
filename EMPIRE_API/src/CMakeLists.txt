@@ -34,7 +34,7 @@ target_link_libraries(EMPIRE_API_Static)
 #------------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------------#
-#MESSAGE("C Compiler Flags for EMPIRE_API are:\t${CMAKE_C_FLAGS} \nC++ Compiler Flags for EMPIRE_API are:\t${CMAKE_CXX_FLAGS}")
-#MESSAGE("Emperor_LIBS: ${Emperor_LIBS}")
-#MESSAGE("EMPIRE_API_INCLUDES: ${EMPIRE_API_INCLUDES}")
-#MESSAGE("EMPIRE_API_SOURCES: ${EMPIRE_API_SOURCES}")
+MESSAGE("C Compiler Flags for EMPIRE_API are:\t${CMAKE_C_FLAGS} \nC++ Compiler Flags for EMPIRE_API are:\t${CMAKE_CXX_FLAGS}")
+MESSAGE("Emperor_LIBS: ${Emperor_LIBS}")
+MESSAGE("EMPIRE_API_INCLUDES: ${EMPIRE_API_INCLUDES}")
+MESSAGE("EMPIRE_API_SOURCES: ${EMPIRE_API_SOURCES}")

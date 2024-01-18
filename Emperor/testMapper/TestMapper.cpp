@@ -350,18 +350,22 @@ void TestMapper::doMapping() {
             bool oppositeSurfaceNormal = settingMappers[i].settingMortarMapper.oppositeSurfaceNormal;
             bool dual = settingMappers[i].settingMortarMapper.dual;
             bool enforceConsistency = settingMappers[i].settingMortarMapper.enforceConsistency;
-            mapper = new MortarMapper("mortarMapper", numNodesA, numElemsA, numNodesPerElemA, nodeCoorsA, nodeIDsA,
+            mapper = new MortarMapper(numNodesA, numElemsA, numNodesPerElemA, nodeCoorsA, nodeIDsA,
                     elemTableA, numNodesB, numElemsB, numNodesPerElemB, nodeCoorsB, nodeIDsB,
                     elemTableB, oppositeSurfaceNormal, dual, enforceConsistency);
+            mapper->buildCouplingMatrices();
         } else if (settingMappers[i].type == "nearestNeighborMapper") {
             mapper = new NearestNeighborMapper(numNodesA, nodeCoorsA, numNodesB, nodeCoorsB);
+            mapper->buildCouplingMatrices();
         } else if (settingMappers[i].type == "barycentricInterpolationMapper") {
             mapper = new BarycentricInterpolationMapper(numNodesA, nodeCoorsA, numNodesB,
                     nodeCoorsB);
+            mapper->buildCouplingMatrices();
         } else if (settingMappers[i].type == "nearestElementMapper") {
             mapper = new NearestElementMapper(numNodesA, numElemsA, numNodesPerElemA, nodeCoorsA,
                     nodeIDsA, elemTableA, numNodesB, numElemsB, numNodesPerElemB, nodeCoorsB,
                     nodeIDsB, elemTableB);
+            mapper->buildCouplingMatrices();
         } else {
             assert(false);
         }
@@ -435,7 +439,7 @@ void TestMapper::doMapping() {
                         "\"consistentMappingDataFieldBErr\"", "\"testMapper\"", 1, "Vector",
                         numNodesB, nodeIDsB, dataFieldBErr);
 
-                // comoute L2 norm of error
+                // compute L2 norm of error
                 double vecL2Norm[3] = { 0.0, 0.0, 0.0 };
                 for (int j = 0; j < 3; j++) {
                     for (int k = 0; k < numNodesB; k++) {
@@ -701,8 +705,8 @@ void TestMapper::doConservationAnalysis() {
         for (int j = 0; j < 3; j++) { // x,y,z
             resultantForceDiff[j] = resultantForceA[j] - resultantForceB[j];
         }
-        double relativeError = MortarMath::computeVectorLength(resultantForceDiff)
-                / MortarMath::computeVectorLength(resultantForceB);
+        double relativeError = EMPIRE::MathLibrary::computeVectorLength(resultantForceDiff)
+                / EMPIRE::MathLibrary::computeVectorLength(resultantForceB);
         cout << "\t" << "check conservation of force ..." << endl;
         cout << "\t\t" << "resultantForceA: " << "(" << resultantForceA[0] << ", "
                 << resultantForceA[1] << ", " << resultantForceA[2] << ")" << endl;
