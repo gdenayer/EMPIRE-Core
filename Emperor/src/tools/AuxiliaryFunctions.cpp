@@ -37,11 +37,26 @@ bool AuxiliaryFunctions::CompareStringInsensitive(std::string strFirst, std::str
 }
 
 void AuxiliaryFunctions::report_num_threads(int level)
-
 {
 #pragma omp single
     {
          infoOut()<<"Thread level :"<<level<<" number of threads is: "<<omp_get_num_threads()<<std::endl;
     }
+}
+
+double AuxiliaryFunctions::highresDiffTime(timeval highrestimeStart, timeval highrestimeEnd)
+{
+  /// return the duration between the time 'highrestimeStart' and the time 'highrestimeEnd'.
+  /// This function should be used in combination with the function 'gettimeofday' (microsecond resolution).
+  // Calculate the difference in seconds
+  double seconds = highrestimeEnd.tv_sec - highrestimeStart.tv_sec;
+  // Calculate the difference in microseconds
+  double microseconds = highrestimeEnd.tv_usec - highrestimeStart.tv_usec;
+  // Adjust if microseconds are negative
+  if (microseconds < 0) {
+    seconds -= 1;
+    microseconds += 1000000.0;
+  }
+  return seconds + microseconds / 1000000.0;
 }
 } /* namespace EMPIRE */

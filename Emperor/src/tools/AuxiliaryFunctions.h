@@ -25,6 +25,7 @@
  **************************************************************************************************/
 #ifndef AUXILIARYFUNCTIONS_H_
 #define AUXILIARYFUNCTIONS_H_
+#include <sys/time.h>
 #include <string>
 
 namespace EMPIRE {
@@ -47,7 +48,13 @@ public:
      * \author Stefan Sicklinger
      ***********/
     static void report_num_threads(int level);
-
+    /***********************************************************************************************
+     * \brief return the duration between the time 'highrestimeStart' and the time 'highrestimeEnd'
+     * \param[in] 'highrestimeStart' stored the starting time
+     * \param[in] 'highrestimeEnd' stored the end time
+     * \author Guillaume De Nayer
+     ***********/
+    static double highresDiffTime(timeval highrestimeStart, timeval highrestimeEnd);
 };
 
 } /* namespace EMPIRE */

@@ -20,7 +20,8 @@
  */
 #include <assert.h>
 #include <mpi.h>
-#include <time.h>
+// for the function 'gettimeofday' (microsecond resolution)
+#include <sys/time.h>
 #include <sstream>
 
 #include "Emperor.h"
@@ -59,6 +60,7 @@
 #include "OptimizationLoop.h"
 #include "PseudoCodeOutput.h"
 #include "ConvergenceChecker.h"
+#include "AuxiliaryFunctions.h"
 #include "AuxiliaryParameters.h"
 #include "Residual.h"
 
@@ -125,83 +127,89 @@ void Emperor::startServerListening() {
 void Emperor::startServerCoupling() {
     connectAllClients();
     // Start time stamps
-    time_t timeStart, timeEnd;
-    // Get start time
-    time(&timeStart);
+    // for the function 'gettimeofday'
+    struct timeval highrestimeStart, highrestimeEnd;
     stringstream timeMessage;
 
-    // Get start time
-    time(&timeStart);
+    // Capture the start time
+    gettimeofday(&highrestimeStart, NULL);
     HEADING_OUT(4, "Emperor", "initClientCodes", infoOut);
     initClientCodes();
-    time(&timeEnd);
+    // Capture the end time
+    gettimeofday(&highrestimeEnd, NULL);
+    double duration = AuxiliaryFunctions::highresDiffTime(highrestimeStart, highrestimeEnd);
     timeMessage.str(""); /// delete old message
-    timeMessage << "It took " << difftime(timeEnd, timeStart) << " seconds for initClientCodes";
+    timeMessage << "It took " << duration << " seconds for initClientCodes";
     INDENT_OUT(1, timeMessage.str(), infoOut);
 
-    // Get start time
-    time(&timeStart);
+    //
+    gettimeofday(&highrestimeStart, NULL);
     HEADING_OUT(4, "Emperor", "initDataOutputs", infoOut);
     initDataOutputs();
-    time(&timeEnd);
+    gettimeofday(&highrestimeEnd, NULL);
+    duration = AuxiliaryFunctions::highresDiffTime(highrestimeStart, highrestimeEnd);
     timeMessage.str(""); /// delete old message
-    timeMessage << "It took " << difftime(timeEnd, timeStart) << " seconds for initDataOutputs";
+    timeMessage << "It took " << duration << " seconds for initDataOutputs";
     INDENT_OUT(1, timeMessage.str(), infoOut);
 
-    // Get start time
-    time(&timeStart);
+    //
+    gettimeofday(&highrestimeStart, NULL);
     HEADING_OUT(4, "Emperor", "initMappers", infoOut);
     initMappers();
-    time(&timeEnd);
+    gettimeofday(&highrestimeEnd, NULL);
+    duration = AuxiliaryFunctions::highresDiffTime(highrestimeStart, highrestimeEnd);
     timeMessage.str("");
-    timeMessage << "It took " << difftime(timeEnd, timeStart) << " seconds for initMappers";
+    timeMessage << "It took " << duration << " seconds for initMappers";
     INDENT_OUT(1, timeMessage.str(), infoOut);
 
-    // Get start time
-    time(&timeStart);
+    //
+    gettimeofday(&highrestimeStart, NULL);
     HEADING_OUT(4, "Emperor", "initCouplingAlgorithms", infoOut);
     initCouplingAlgorithms();
-    time(&timeEnd);
+    gettimeofday(&highrestimeEnd, NULL);
+    duration = AuxiliaryFunctions::highresDiffTime(highrestimeStart, highrestimeEnd);
     timeMessage.str("");
-    timeMessage << "It took " << difftime(timeEnd, timeStart)
-            << " seconds for initCouplingAlgorithms";
+    timeMessage << "It took " << duration << " seconds for initCouplingAlgorithms";
     INDENT_OUT(1, timeMessage.str(), infoOut);
 
-    // Get start time
-    time(&timeStart);
+    //
+    gettimeofday(&highrestimeStart, NULL);
     HEADING_OUT(4, "Emperor", "initExtrapolators", infoOut);
     initExtrapolators();
-    time(&timeEnd);
+    gettimeofday(&highrestimeEnd, NULL);
+    duration = AuxiliaryFunctions::highresDiffTime(highrestimeStart, highrestimeEnd);
     timeMessage.str("");
-    timeMessage << "It took " << difftime(timeEnd, timeStart) << " seconds for initExtrapolators";
+    timeMessage << "It took " << duration << " seconds for initExtrapolators";
     INDENT_OUT(1, timeMessage.str(), infoOut);
 
-    // Get start time
-    time(&timeStart);
+    //
+    gettimeofday(&highrestimeStart, NULL);
     HEADING_OUT(4, "Emperor", "initConnections", infoOut);
     initConnections();
-    time(&timeEnd);
+    gettimeofday(&highrestimeEnd, NULL);
+    duration = AuxiliaryFunctions::highresDiffTime(highrestimeStart, highrestimeEnd);
     timeMessage.str("");
-    timeMessage << "It took " << difftime(timeEnd, timeStart) << " seconds for initConnections";
+    timeMessage << "It took " << duration << " seconds for initConnections";
     INDENT_OUT(1, timeMessage.str(), infoOut);
 
-    // Get start time
-    time(&timeStart);
+    //
+    gettimeofday(&highrestimeStart, NULL);
     HEADING_OUT(4, "Emperor", "initGlobalCouplingLogic", infoOut);
     initGlobalCouplingLogic();
-    time(&timeEnd);
+    gettimeofday(&highrestimeEnd, NULL);
+    duration = AuxiliaryFunctions::highresDiffTime(highrestimeStart, highrestimeEnd);
     timeMessage.str("");
-    timeMessage << "It took " << difftime(timeEnd, timeStart)
-            << " seconds for initGlobalCouplingLogic";
+    timeMessage << "It took " << duration << " seconds for initGlobalCouplingLogic";
     INDENT_OUT(1, timeMessage.str(), infoOut);
 
-    // Get start time
-    time(&timeStart);
+    //
+    gettimeofday(&highrestimeStart, NULL);
     HEADING_OUT(4, "Emperor", "doCoSimulation", infoOut);
     doCoSimulation();
-    time(&timeEnd);
+    gettimeofday(&highrestimeEnd, NULL);
+    duration = AuxiliaryFunctions::highresDiffTime(highrestimeStart, highrestimeEnd);
     timeMessage.str("");
-    timeMessage << "It took " << difftime(timeEnd, timeStart) << " seconds for doCoSimulation";
+    timeMessage << "It took " << duration << " seconds for doCoSimulation";
     INDENT_OUT(1, timeMessage.str(), infoOut);
 
     disconnectAllClients();
@@ -281,7 +289,7 @@ void Emperor::initClientCodes() {
 
             // Receiving the initial values of the data fields specified. // Aditya
             for (int k = 0; k < initialDataFields.size(); k++) {
-            	clientCode->recvDataField(settingMesh.name, initialDataFields.at(k));
+                clientCode->recvDataField(settingMesh.name, initialDataFields.at(k));
             }
         }
 
@@ -376,7 +384,7 @@ void Emperor::initMappers() {
                     settingMapper.IGAMortarMapper.propErrorComputation.isDomainError,
                     settingMapper.IGAMortarMapper.propErrorComputation.isCurveError,
                     settingMapper.IGAMortarMapper.propErrorComputation.isInterfaceError);
-	} else if (settingMapper.type == EMPIRE_IGABarycentricMapper) {
+        } else if (settingMapper.type == EMPIRE_IGABarycentricMapper) {
             mapper->initIGABarycentricMapper(
                     settingMapper.IGABarycentricMapper.propProjection.maxProjectionDistance,
                     settingMapper.IGABarycentricMapper.propProjection.noInitialGuess,

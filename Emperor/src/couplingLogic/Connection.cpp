@@ -20,7 +20,8 @@
  */
 #include <iostream>
 #include <assert.h>
-#include <time.h>
+// for the function 'gettimeofday' (microsecond resolution)
+#include <sys/time.h>
 
 #include "Connection.h"
 #include "ClientCode.h"
@@ -28,6 +29,7 @@
 #include "AbstractFilter.h"
 #include "ConnectionIO.h"
 #include "Message.h"
+#include "AuxiliaryFunctions.h"
 
 using namespace std;
 
@@ -51,20 +53,34 @@ void Connection::doCoupling() {
 
 void Connection::transferData() {
     // Start time stamps
-    time_t timeStart, timeEnd;
+    // for the function 'gettimeofday'
+    struct timeval highrestimeStart, highrestimeEnd;
     stringstream timeMessage;
-
 
     for (unsigned i = 0; i < inputVec.size(); i++)
         inputVec[i]->receive();
-    time(&timeStart);
+
+    // Capture the start time
+    if (gettimeofday(&highrestimeStart, NULL) != 0) {
+        cerr << "Error: gettimeofday failed to get start time." << endl;
+        return;
+    }
+
     for (unsigned i = 0; i < filterVec.size(); i++){
         filterVec[i]->filtering();
     }
-    time(&timeEnd);
-    timeMessage << "It took " << difftime(timeEnd, timeStart) << " seconds for filtering";
+
+    // Capture the end time
+    if (gettimeofday(&highrestimeEnd, NULL) != 0) {
+        cerr << "Error: gettimeofday failed to get end time." << endl;
+        return;
+    }
+
+    double duration = AuxiliaryFunctions::highresDiffTime(highrestimeStart, highrestimeEnd);
+    timeMessage << "It took " << duration << " seconds for filtering";
     INDENT_OUT(1, timeMessage.str(), infoOut);
     timeMessage.str("");
+
     for (unsigned i = 0; i < outputVec.size(); i++){
         outputVec[i]->send();
     }
