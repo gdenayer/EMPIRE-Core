@@ -18,9 +18,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with EMPIRE.  If not, see http://www.gnu.org/licenses/.
 #------------------------------------------------------------------------------------#
+cmake_minimum_required (VERSION 2.8.10)
+#------------------------------------------------------------------------------------#
 project (EMPIRE)
 #------------------------------------------------------------------------------------#
-cmake_minimum_required (VERSION 2.8.10)
 set( CMAKE_VERBOSE_MAKEFILE off )
 #------------------------------------------------------------------------------------#
 
@@ -84,6 +85,10 @@ IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND "${CMAKE_C_COMPILER_ID}" STR
   # using Intel C/C++
   SET(USE_INTEL_COMPILERS_MKL_IMPI_LINUX ON)
   MESSAGE("C compiler is ${CMAKE_C_COMPILER_ID} and has version ${CMAKE_C_COMPILER_VERSION} \nC++ compiler is ${CMAKE_CXX_COMPILER_ID} and has version ${CMAKE_CXX_COMPILER_VERSION} " ) 
+ELSEIF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM" AND "${CMAKE_C_COMPILER_ID}" STREQUAL "IntelLLVM")
+  # using IntelLLVM C/C++
+  SET(USE_INTELLLVM_COMPILERS_MKL_IMPI_LINUX ON)
+  MESSAGE("C compiler is ${CMAKE_C_COMPILER_ID} and has version ${CMAKE_C_COMPILER_VERSION} \nC++ compiler is ${CMAKE_CXX_COMPILER_ID} and has version ${CMAKE_CXX_COMPILER_VERSION} " ) 
 ELSEIF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC" AND "${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
   # using MSVC
   SET(USE_INTEL_COMPILERS_MKL_MSMPI_WINDOWS ON)
@@ -124,6 +129,25 @@ IF (${USE_INTEL_COMPILERS_MKL_IMPI_LINUX})
   
 ENDIF()
 
+IF (${USE_INTELLLVM_COMPILERS_MKL_IMPI_LINUX})
+  SET (CMAKE_C_COMPILER "mpiicx")
+  SET (CMAKE_CXX_COMPILER "mpiicpx")
+  #SET (MKL_INCLUDE_DIR "")
+  #SET (MKL_LIB_DIR     "")
+  #Let the source code know
+  IF(${USE_INTEL_COMPILERS_EIGEN})
+    add_definitions(-DUSE_EIGEN)
+    IF (${USE_EIGEN_ITERATIVE})
+      add_definitions(-DEIGEN_ITERATIVE)
+    ENDIF() 
+  ELSE()
+    find_package(MKL CONFIG REQUIRED)
+    add_definitions(-DUSE_INTEL_MKL)
+  ENDIF()
+  
+ENDIF()
+
+
 IF (${USE_INTEL_COMPILERS_MKL_MSMPI_WINDOWS})
   # Require MPI for this project:
   SET(MPI_ROOT_PATH "C:/Program Files/Microsoft HPC Pack 2012")
@@ -144,7 +168,7 @@ add_definitions(-DMPICH_IGNORE_CXX_SEEK)
 #------------------------------------------------------------------------------------#
 # Set Compiler flags and Linker flags (CMAKE_BUILD_TYPE is not used!) 
 ## Here INTEL specific flags are taken care for
-IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND "${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
+IF (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM") AND ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "IntelLLVM"))
 ## This is for all compilers
     check_c_compiler_flag(-xHost   CHECKXHOST)
     check_cxx_compiler_flag(-xHost CHECKXHOST)
