@@ -56,7 +56,7 @@ private:
     DataField *b1;
     DataField *a2;
     DataField *b2;
-    static const double EPS = 1E-8;
+    static constexpr double EPS = 1E-8;
 
 public:
     /***********************************************************************************************
