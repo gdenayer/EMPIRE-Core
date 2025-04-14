@@ -65,7 +65,9 @@ public:
      * \param[in] _igaControlPointWeights The Control Point weights for the 2D NURBS basis
      * \author Andreas Apostolatos
      ***********/
-    NurbsBasis2D(int, int, int, double*, int, int, double*, int, int, double*);
+    NurbsBasis2D(int _ID = 0, int _pDegree = 0, int _noKnotsU = 0, double* _KnotVectorU =
+        NULL, int _qDegree = 0, int _noKnotsV = 0, double* _KnotVectorV = NULL,
+        int _uNoBasisFnc = 0, int _vNoBasisFnc = 0, double* _igaControlPointWeights = NULL);
 
     /***********************************************************************************************
      * \brief Destructor

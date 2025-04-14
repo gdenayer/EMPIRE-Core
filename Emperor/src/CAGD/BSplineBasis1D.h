@@ -59,7 +59,7 @@ public:
      * \param[in] _KnotVector The knot vector
      * \author Andreas Apostolatos
      ***********/
-    BSplineBasis1D(int, int, int, double*);
+    BSplineBasis1D(int _ID = 0, int _pDegree = 0, int _noKnots = 0, double* _KnotVector = nullptr);
 
     /***********************************************************************************************
      * \brief Destructor

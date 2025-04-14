@@ -32,9 +32,7 @@ using namespace std;
 
 namespace EMPIRE {
 
-BSplineBasis2D::BSplineBasis2D(int _ID = 0, int _pDegree = 0, int _noKnotsU = 0,
-        double* _KnotVectorU = NULL, int _qDegree = 0, int _noKnotsV = 0, double* _KnotVectorV =
-                NULL) :
+BSplineBasis2D::BSplineBasis2D(int _ID, int _pDegree, int _noKnotsU, double* _KnotVectorU, int _qDegree, int _noKnotsV, double* _KnotVectorV) :
         AbstractBSplineBasis2D(_ID) {
 
     // The NURBS basis functions in u-direction

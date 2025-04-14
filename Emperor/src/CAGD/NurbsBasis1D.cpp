@@ -34,8 +34,7 @@
 
 namespace EMPIRE {
 
-NurbsBasis1D::NurbsBasis1D(int _ID = 0, int _pDegree = 0, int _noKnots = 0, double* _KnotVector =
-        NULL, int _noControlPoints = 0, double* _controlPointWeights = NULL) :
+NurbsBasis1D::NurbsBasis1D(int _ID, int _pDegree, int _noKnots, double* _KnotVector, int _noControlPoints, double* _controlPointWeights) :
         BSplineBasis1D(_ID, _pDegree, _noKnots, _KnotVector), NoControlPoints(_noControlPoints) {
 
     if (_noControlPoints != _noKnots - _pDegree - 1) {

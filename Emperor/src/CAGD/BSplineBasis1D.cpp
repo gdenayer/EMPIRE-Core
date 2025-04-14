@@ -34,9 +34,8 @@ namespace EMPIRE {
 
 const double BSplineBasis1D::EPS_ACCPETEDINTOKNOTSPAN = 1e-6;
 
-BSplineBasis1D::BSplineBasis1D(int _ID = 0, int _pDegree = 0, int _noKnots = 0,
-        double* _KnotVector = 0) :
-        AbstractBSplineBasis1D(_ID), PDegree(_pDegree), NoKnots(_noKnots) {
+BSplineBasis1D::BSplineBasis1D(int _ID, int _pDegree, int _noKnots, double* _KnotVector) :
+    AbstractBSplineBasis1D(_ID), PDegree(_pDegree), NoKnots(_noKnots) {
     // Assign the given pointer to the knot vector
     assert(_KnotVector!=NULL);
 
@@ -61,7 +60,7 @@ BSplineBasis1D::BSplineBasis1D(int _ID = 0, int _pDegree = 0, int _noKnots = 0,
 }
 
 BSplineBasis1D::BSplineBasis1D(const BSplineBasis1D& _bsplineBasis1D) :
-        AbstractBSplineBasis1D(_bsplineBasis1D) {
+    AbstractBSplineBasis1D(_bsplineBasis1D) {
 
     PDegree = _bsplineBasis1D.PDegree;
     NoKnots = _bsplineBasis1D.NoKnots;
@@ -91,40 +90,38 @@ BSplineBasis1D::~BSplineBasis1D() {
 }
 
 double BSplineBasis1D::computeGrevilleAbscissae(const int _controlPointIndex) const {
-	double GrevilleAbscissae=0;
-	for(int i=0;i<PDegree;i++) {
-		GrevilleAbscissae+=KnotVector[_controlPointIndex+1+i];
-	}
-	GrevilleAbscissae/=PDegree;
-	double minKnot = KnotVector[_controlPointIndex+1];
-	double maxKnot = KnotVector[_controlPointIndex+PDegree];
-	if(GrevilleAbscissae < minKnot - EPS_ACCPETEDINTOKNOTSPAN
-			|| GrevilleAbscissae > maxKnot + EPS_ACCPETEDINTOKNOTSPAN) {
-		ERROR_OUT()<<"Greville abscissae "<<GrevilleAbscissae<<" is out of Knot vector bound ["
-				<<minKnot<<", "<<maxKnot<<"]"<<endl;
-		exit(-1);
-	}
-	return GrevilleAbscissae;
+    double GrevilleAbscissae=0;
+    for(int i=0;i<PDegree;i++) {
+        GrevilleAbscissae+=KnotVector[_controlPointIndex+1+i];
+    }
+    GrevilleAbscissae/=PDegree;
+    double minKnot = KnotVector[_controlPointIndex+1];
+    double maxKnot = KnotVector[_controlPointIndex+PDegree];
+    if(GrevilleAbscissae < minKnot - EPS_ACCPETEDINTOKNOTSPAN || GrevilleAbscissae > maxKnot + EPS_ACCPETEDINTOKNOTSPAN) {
+        ERROR_OUT()<<"Greville abscissae "<<GrevilleAbscissae<<" is out of Knot vector bound [" <<minKnot<<", "<<maxKnot<<"]"<<endl;
+        exit(-1);
+    }
+    return GrevilleAbscissae;
 }
 
 bool BSplineBasis1D::clampKnot(double& _uPrm, double _tol) const {
-	bool isInside=true;
+        bool isInside=true;
 
-	// Clamp to lower boundary according to tolerance
-	double firstKnot=getFirstKnot();
+        // Clamp to lower boundary according to tolerance
+        double firstKnot=getFirstKnot();
     if (_uPrm < firstKnot && firstKnot - _uPrm < _tol) {
-    	_uPrm = firstKnot;
+        _uPrm = firstKnot;
     //In case knot is fully outside, clamp it anyway but set up output flag to false
     } else if(_uPrm < firstKnot){
-    	isInside=false;
-    	_uPrm = firstKnot;
+        isInside=false;
+        _uPrm = firstKnot;
     }
-	// Clamp to upper boundary according to tolerance
-	double lastKnot=getLastKnot();
+        // Clamp to upper boundary according to tolerance
+        double lastKnot=getLastKnot();
     if (_uPrm > lastKnot && _uPrm - lastKnot < _tol) {
         _uPrm = lastKnot;
     } else if(_uPrm > lastKnot){
-    	isInside=false;
+        isInside=false;
         _uPrm = lastKnot;
     }
     return isInside;
@@ -132,7 +129,7 @@ bool BSplineBasis1D::clampKnot(double& _uPrm, double _tol) const {
 
 int BSplineBasis1D::findKnotSpan(double _uPrm) const {
     // Check input
-	double uPrm = _uPrm;
+        double uPrm = _uPrm;
     if(!clampKnot(_uPrm)) {
         stringstream sstream;
         sstream << "Given parameter "<<uPrm<<" out of knot bounds ["<<getFirstKnot()<<", "<<getLastKnot()<<"]"<<endl;

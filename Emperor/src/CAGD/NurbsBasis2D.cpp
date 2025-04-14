@@ -36,9 +36,8 @@ using namespace std;
 
 namespace EMPIRE {
 
-NurbsBasis2D::NurbsBasis2D(int _ID = 0, int _pDegree = 0, int _noKnotsU = 0, double* _KnotVectorU =
-        NULL, int _qDegree = 0, int _noKnotsV = 0, double* _KnotVectorV = NULL,
-        int _uNoBasisFnc = 0, int _vNoBasisFnc = 0, double* _igaControlPointWeights = NULL) :
+NurbsBasis2D::NurbsBasis2D(int _ID, int _pDegree, int _noKnotsU, double* _KnotVectorU, int _qDegree, int _noKnotsV, double* _KnotVectorV,
+        int _uNoBasisFnc, int _vNoBasisFnc, double* _igaControlPointWeights) :
         BSplineBasis2D(_ID, _pDegree, _noKnotsU, _KnotVectorU, _qDegree, _noKnotsV, _KnotVectorV), uNoBasisFnc(
                 _uNoBasisFnc), vNoBasisFnc(_vNoBasisFnc) {
 
