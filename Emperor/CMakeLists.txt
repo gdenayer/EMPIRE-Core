@@ -13,8 +13,11 @@ ENDIF()
 ENDIF(OPENMP_FOUND)
 #------------------------------------------------------------------------------------#
 IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
-  SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -C")
-  SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -C")
+  SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+  SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  # compiler option -C requires -E on modern compiler.
+  # SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -C")
+  # SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -C")
 ENDIF()
 IF (CMAKE_SYSTEM_NAME MATCHES "Windows")
   SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /C")
