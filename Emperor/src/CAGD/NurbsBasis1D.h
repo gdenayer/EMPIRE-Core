@@ -57,7 +57,7 @@ public:
      * \param[in] _controlPointWeights The Control Point weights for the 1D NURBS basis
      * \author Andreas Apostolatos
      ***********/
-    NurbsBasis1D(int _ID = 0, int _pDegree = 0, int _noKnots = 0, double* _KnotVector = NULL, int _noControlPoints = 0, double* _controlPointWeights = NULL);
+    NurbsBasis1D(int _ID = 0, int _pDegree = 0, int _noKnots = 0, double* _KnotVector = 0, int _noControlPoints = 0, double* _controlPointWeights = 0);
 
     /***********************************************************************************************
      * \brief Destructor
