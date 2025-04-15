@@ -51,8 +51,6 @@ private:
     DataField *dfOld;
     ComaAitken *comaAitken;
 
-    static constexpr double EPS = 1E-10;
-  
 public:
     void setUp() {
         /*aitkenFactor = 0.5;

@@ -56,7 +56,6 @@ private:
     DataField *b1;
     DataField *a2;
     DataField *b2;
-    static constexpr double EPS = 1E-8;
 
 public:
     /***********************************************************************************************
@@ -164,6 +163,7 @@ public:
      * \brief Test case: Test consistent and conservative property of all mappers
      ***********/
     void testMappers() {
+        static double EPS = 1E-8;
         // <math.h> abs/fabs is for floating point numbers, <stdlib.h> abs is for integers!!!
         for (int i = 0; i < 2; i++) {
             bool dual;
