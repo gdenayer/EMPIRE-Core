@@ -614,7 +614,7 @@ void IGABarycentricMapper::computeNeighborsAndWeights() {
         }
         delete elementCentroids_FLANN;
         delete ANodesTree;
-        delete castedCPs;
+        delete[] castedCPs;
     #endif
     }
     delete[] elementCentroids;
