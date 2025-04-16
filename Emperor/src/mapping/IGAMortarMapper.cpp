@@ -437,8 +437,9 @@ void IGAMortarMapper::buildCouplingMatrices() {
     }
 
     // 17. Compute the Penalty parameters for the application of weak Dirichlet surface conditions
-    if(propWeakSurfaceDirichletConditions.isWeakSurfaceDirichletConditions && !isMappingIGA2FEM)
+    if(propWeakSurfaceDirichletConditions.isWeakSurfaceDirichletConditions && !isMappingIGA2FEM) {
         computePenaltyParametersForWeakDirichletSurfaceConditions();
+    }
 
     // 18. Compute the Penalty parameters for the application of weak patch continuity conditions
     if(propWeakPatchContinuityConditions.isWeakPatchContinuityConditions && !isMappingIGA2FEM) {
@@ -458,9 +459,10 @@ void IGAMortarMapper::buildCouplingMatrices() {
         }
         computeIGAPatchWeakContinuityConditionMatrices();
         INFO_OUT() << "Application of weak patch continuity conditions finished" << std::endl;
-    } else
+    } else {
         INFO_OUT() << "No application of weak patch continuity conditions is assumed" << std::endl;
-
+    }
+	
     // 20. Remove empty rows and columns from system (flying nodes)
     if(!isMappingIGA2FEM){
         INFO_OUT() << "Enforcing flying nodes in Cnn" << std::endl;
@@ -468,9 +470,10 @@ void IGAMortarMapper::buildCouplingMatrices() {
     }
 
     // 21. Check and enforce consistency in Cnn. This has to be done before the weak application of the Dirichlet conditions.
-    if (propConsistency.enforceConsistency)
+    if (propConsistency.enforceConsistency) {
         enforceConsistency();
-
+    }
+	
     // 22. Compute the Penalty matrices for the application of weak Dirichlet conditions along trimming curves
     if (propWeakCurveDirichletConditions.isWeakCurveDirichletConditions) {
         INFO_OUT() << "Application of weak Dirichlet curve conditions started" << endl;
@@ -481,9 +484,10 @@ void IGAMortarMapper::buildCouplingMatrices() {
         }
         computeIGAWeakDirichletCurveConditionMatrices();
         INFO_OUT() << "Application of weak Dirichlet curve conditions finished" << std::endl;
-    } else
+    } else {
         INFO_OUT() << "No application of weak Dirichlet curve conditions are assumed" << std::endl;
-
+    }
+	
     // 23. Compute the Penalty matrices for the application of weak Dirichlet conditions across surfaces
     if (propWeakSurfaceDirichletConditions.isWeakSurfaceDirichletConditions) {
         INFO_OUT() << "Application of weak Dirichlet surface conditions started" << endl;
@@ -494,9 +498,10 @@ void IGAMortarMapper::buildCouplingMatrices() {
         }
         computeIGAWeakDirichletSurfaceConditionMatrices();
         INFO_OUT() << "Application of weak Dirichlet surface conditions finished" << std::endl;
-    } else
+    } else {
         INFO_OUT() << "No application of weak Dirichlet surface conditions are assumed" << std::endl;
-
+    }
+	
     // 24. Factorize Cnn matrix
     couplingMatrices->factorizeCnn();
     INFO_OUT() << "Factorize was successful" << std::endl;
@@ -794,9 +799,10 @@ void IGAMortarMapper::computeMinimumElementAreaSize() {
         } else if (!propIntegration.isAutomaticNoGPQuadrilateral) {
                 numUGPs = propIntegration.noGPQuadrilateral;
                 numVGPs = propIntegration.noGPQuadrilateral;
-        } else
+        } else {
             ERROR_BLOCK_OUT("createGaussQuadratureRules","IGAMortarMapper","Found corner case not encountered before related to the integration over a quadrilateral!");
-
+	}
+	    
         // 1viii. Instantiate the corresponding Gauss quadrature on quadrilateral
         EMPIRE::MathLibrary::IGAGaussQuadrature* gaussURule = new MathLibrary::IGAGaussQuadratureOnBiunitInterval(numUGPs);
         EMPIRE::MathLibrary::IGAGaussQuadrature* gaussVRule = new MathLibrary::IGAGaussQuadratureOnBiunitInterval(numVGPs);
@@ -1816,9 +1822,10 @@ bool IGAMortarMapper::projectLineOnPatchBoundary(IGAPatchSurface* thePatch, doub
     }
 
     // Debug output
-    if(!isProjectedOnPatchBoundary)
+    if(!isProjectedOnPatchBoundary) {
         DEBUG_OUT() << "In IGAMortarMapper::projectLineOnPatchBoundary. Point projection on boundary did not converge. Relax newtonRaphsonBoundary and/or bisection parameters in XML input!"<<endl;
-
+    }
+	
     return isProjectedOnPatchBoundary;
 }
 
@@ -2120,11 +2127,11 @@ IGAMortarMapper::Polygon2D IGAMortarMapper::computeCanonicalElement(const int _e
         coordsNodeFEUV[1] = _polygonUV[iVertices].second;
 
         // 3ii. Compute the local coordinates in the patch given the type of the canonical element
-        if(numNodesElementFE == 3)
+        if (numNodesElementFE == 3) {
             MathLibrary::computeLocalCoordsInTriangle(elementFEUV, coordsNodeFEUV, coordsNodeFEWZ);
-        else if (numNodesElementFE == 4)
+        } else if (numNodesElementFE == 4) {
             MathLibrary::computeLocalCoordsInQuad(elementFEUV, coordsNodeFEUV, coordsNodeFEWZ);
-        else {
+        } else {
             ERROR_OUT() << "The canonical element can only be a triangle or a quadrilateral" << endl;
             exit(-1);
         }
@@ -2204,11 +2211,11 @@ void IGAMortarMapper::integrate(IGAPatchSurface* _thePatch, int _patchIndex, Pol
     // 2. Get the corresponding quadrature rule depending on the integration domain
     EMPIRE::MathLibrary::IGAGaussQuadrature* theGaussQuadrature;
     int nNodesQuadrature = numNodesUV;
-    if (nNodesQuadrature == 3)
+    if (nNodesQuadrature == 3) {
         theGaussQuadrature = gaussRuleOnTriangle[_patchIndex];
-    else if (nNodesQuadrature == 4)
+    } else if (nNodesQuadrature == 4) {
         theGaussQuadrature = gaussRuleOnQuadrilateral[_patchIndex];
-    else {
+    } else {
         ERROR_OUT() << "Only triangles and quadrilaterals are expected as integration domains";
         exit(-1);
     }
@@ -2342,9 +2349,9 @@ void IGAMortarMapper::integrate(IGAPatchSurface* _thePatch, int _patchIndex, Pol
             // 6xiv.1. Loop over all local basis functions in the master side to compute and assemble the local Cnn matrix to the global one
             for (int j = i; j < numNodesElMaster; j++) { // Starts from i because of computing only the upper triangular entries of the matrix
                 // 6xiv.1i. Compute the product of the basis functions
-                if (isMappingIGA2FEM)
+	        if (isMappingIGA2FEM) {
                     basisFunctionsProduct = basisFunctionsFE[i] * basisFunctionsFE[j];
-                else {
+                } else {
                     IGABasisFctsI = localBasisFunctionsAndDerivatives[_thePatch->getIGABasis()->indexDerivativeBasisFunction(1, 0, 0, i)];
                     IGABasisFctsJ = localBasisFunctionsAndDerivatives[_thePatch->getIGABasis()->indexDerivativeBasisFunction(1, 0, 0, j)];
                     basisFunctionsProduct = IGABasisFctsI*IGABasisFctsJ;
@@ -2398,7 +2405,7 @@ void IGAMortarMapper::integrate(IGAPatchSurface* _thePatch, int _patchIndex, Pol
                 }
 
                 // 6xiv.2iii. Assemble the element contributions to the global Cnr matrix
-                if (!isExpanded){
+                if (!isExpanded) {
                     couplingMatrices->addCNRValue(dof1, dof2, integrand);
                 } else {
                     for(int iCoord = 0; iCoord < noCoord; iCoord++)
@@ -2589,8 +2596,8 @@ void IGAMortarMapper::createGaussQuadratureRules() {
         qDegree = meshIGA->getSurfacePatch(iPatches)->getIGABasis()->getVBSplineBasis1D()->getPolynomialDegree();
 
         // 4ii. Find the polynomial degree of the integrands when a triangle is considered
-        if (propIntegration.isAutomaticNoGPTriangle)  { // Automatic definition of the quadrature rule
-            if (isMappingIGA2FEM) // When mapping from IGA to FEM integrals \int_{\Omega} N_i*N_i d\Omega and \int_{\Omega} N_i*R_i d\Omega are computed within the same loop
+        if (propIntegration.isAutomaticNoGPTriangle) { // Automatic definition of the quadrature rule
+            if (isMappingIGA2FEM) {// When mapping from IGA to FEM integrals \int_{\Omega} N_i*N_i d\Omega and \int_{\Omega} N_i*R_i d\Omega are computed within the same loop
                 if ((pDegree == 0 && qDegree == 0) || (pDegree == 1 && qDegree == 0) || (pDegree == 0 && qDegree == 1)) { // Integrand N_i*N_i has higher polynomial order than N_i*R_i
                     polOrder = 2;
                     if (polOrder > 8)
@@ -2600,7 +2607,7 @@ void IGAMortarMapper::createGaussQuadratureRules() {
                     if (polOrder > 8)
                         pTilde = std::max(pDegree, qDegree) + 1;
                 }
-            else // When mapping from FEM to IGA integrals \int_{\Omega} R_i*R_i d\Omega and \int_{\Omega} R_i*N_i d\Omega are computed within the same loop
+            } else { // When mapping from FEM to IGA integrals \int_{\Omega} R_i*R_i d\Omega and \int_{\Omega} R_i*N_i d\Omega are computed within the same loop
                 if ((pDegree == 0 && qDegree == 0) || (pDegree == 1 && qDegree == 0) || (pDegree == 0 && qDegree == 1)) { // Integrand N_i*R_i has higher polynomial order than R_i*R_i
                     polOrder = pDegree + qDegree + 1;
                     if (polOrder > 8)
@@ -2610,53 +2617,61 @@ void IGAMortarMapper::createGaussQuadratureRules() {
                     if (polOrder > 8)
                         pTilde = 2*std::max(pDegree, qDegree);
                 }
-
+	    }
+	}
+	
         // 4iii. Find the number of Gauss points when a triangle is considered
-        if (propIntegration.isAutomaticNoGPTriangle)
+        if (propIntegration.isAutomaticNoGPTriangle) {
             if (polOrder <= 8) { // Use the Gauss quadrature over the triangle with the symmetric rule
-                if (polOrder == 0)
+	        if (polOrder == 0) {
                     numGPs = numGPsPerPolOrder[0];
-                else
+                } else {
                     numGPs = numGPsPerPolOrder[polOrder - 1];
-            } else // Use the Gauss quadrature over the triangle with the degenerated quadrilateral
+		}
+	    } else { // Use the Gauss quadrature over the triangle with the degenerated quadrilateral
                 numGPs = pow(std::ceil((pTilde + 1)/2.0), 2.0);
             }
-        else if (!propIntegration.isAutomaticNoGPTriangle)
+        } else if (!propIntegration.isAutomaticNoGPTriangle) {
             numGPs = propIntegration.noGPTriangle;
-        else
+        } else {
             ERROR_BLOCK_OUT("createGaussQuadratureRules","IGAMortarMapper","Found corner case not encountered before related to the integration over a triangle!");
-
+	}
+	    
         // 4iv. Instantiate the corresponding Gauss quadrature on triangle
-        if ((propIntegration.isAutomaticNoGPTriangle && polOrder <= 8) || !propIntegration.isAutomaticNoGPTriangle && numGPs <= 16) // Use the Gauss quadrature over the triangle with the symmetric rule
+        if ((propIntegration.isAutomaticNoGPTriangle && polOrder <= 8) || !propIntegration.isAutomaticNoGPTriangle && numGPs <= 16) { // Use the Gauss quadrature over the triangle with the symmetric rule
             gaussRuleOnTriangle[iPatches] = new MathLibrary::IGAGaussQuadratureOnTriangle(numGPs);
-        else if ((propIntegration.isAutomaticNoGPTriangle && polOrder > 8) || !propIntegration.isAutomaticNoGPTriangle && numGPs > 16) // Use the Gauss quadrature over the triangle with the degenerated quadrilateral
+        } else if ((propIntegration.isAutomaticNoGPTriangle && polOrder > 8) || !propIntegration.isAutomaticNoGPTriangle && numGPs > 16) { // Use the Gauss quadrature over the triangle with the degenerated quadrilateral
             gaussRuleOnTriangle[iPatches] = new MathLibrary::IGAGaussQuadratureOnTriangleUsingDegeneratedQuadrilateral(numGPs);
-        else
+        } else {
             ERROR_BLOCK_OUT("createGaussQuadratureRules","IGAMortarMapper","Found corner case not encountered before related to the integration over a triangle!");
-
+	}
+	    
         // 4v. Find the polynomial degree of the integrands when a quadrilateral is considered
-        if (propIntegration.isAutomaticNoGPQuadrilateral) // Automatic definition of the quadrature rule
-            if (isMappingIGA2FEM) // When mapping from IGA to FEM integrals \int_{\Omega} N_i*N_i d\Omega and \int_{\Omega} N_i*R_i d\Omega are computed within the same loop
+        if (propIntegration.isAutomaticNoGPQuadrilateral) { // Automatic definition of the quadrature rule
+	    if (isMappingIGA2FEM) { // When mapping from IGA to FEM integrals \int_{\Omega} N_i*N_i d\Omega and \int_{\Omega} N_i*R_i d\Omega are computed within the same loop
                 if ((pDegree == 0 && qDegree == 0) || (pDegree == 1 && qDegree == 0) || (pDegree == 0 && qDegree == 1)) { // Integrand N_i*N_i has higher polynomial order than N_i*R_i
                     pTilde = 2;
                 } else { // Integrand N_i*R_i has higher polynomial order than N_i*N_i
                     pTilde = std::max(pDegree, qDegree) + 2;
                 }
-            else // When mapping from FEM to IGA integrals \int_{\Omega} R_i*R_i d\Omega and \int_{\Omega} R_i*N_i d\Omega are computed within the same loop
+            } else { // When mapping from FEM to IGA integrals \int_{\Omega} R_i*R_i d\Omega and \int_{\Omega} R_i*N_i d\Omega are computed within the same loop
                 if ((pDegree == 0 && qDegree == 0) || (pDegree == 1 && qDegree == 0) || (pDegree == 0 && qDegree == 1)) { // Integrand R_i*N_i has higher polynomial order than R_i*R_i
                     pTilde = std::max(pDegree, qDegree) + 2;
                 } else {
                     pTilde = 2*std::max(pDegree, qDegree);
                 }
-
+            }
+	}
+	
         // 4vi. Compute the number of Gauss points when a quadrilateral is considered
-        if (propIntegration.isAutomaticNoGPQuadrilateral)
+        if (propIntegration.isAutomaticNoGPQuadrilateral) {
             numGPs = pow(std::ceil((pTilde + 1)/2.0), 2.0);
-        else if (!propIntegration.isAutomaticNoGPQuadrilateral)
+        } else if (!propIntegration.isAutomaticNoGPQuadrilateral) {
             numGPs = propIntegration.noGPQuadrilateral;
-        else
+        } else {
             ERROR_BLOCK_OUT("createGaussQuadratureRules","IGAMortarMapper","Found corner case not encountered before related to the integration over a quadrilateral!");
-
+	}
+	
         // 4vii. Instantiate the corresponding Gauss quadrature on quadrilateral
         gaussRuleOnQuadrilateral[iPatches] = new MathLibrary::IGAGaussQuadratureOnBiunitQuadrilateral(numGPs);
     }
@@ -2817,13 +2832,15 @@ void IGAMortarMapper::computeIGAWeakDirichletCurveConditionMatrices() {
             if (propWeakCurveDirichletConditions.isSecBendingPrescribed) {
                 normBOperatorOmegaT = EMPIRE::MathLibrary::vector2norm(BOperatorOmegaT, noDOFsLoc);
                 alphaLocal = normBOperatorOmegaT;
-            } else
+            } else {
                 alphaLocal = - 1.0;
-
+	    }
+		
             if (propWeakCurveDirichletConditions.isSecTwistingPrescribed) {
                 normBOperatorOmegaN = EMPIRE::MathLibrary::vector2norm(BOperatorOmegaN, noDOFsLoc);
-                if (normBOperatorOmegaN > alphaLocal)
+                if (normBOperatorOmegaN > alphaLocal) {
                     alphaLocal = normBOperatorOmegaN;
+		}
             }
             alphaLocal = 1.0/abs(alphaLocal);
 
@@ -2873,7 +2890,7 @@ void IGAMortarMapper::computeIGAWeakDirichletCurveConditionMatrices() {
             }
 
             // 3xiii.12. Store the Gauss point values necessary for the error computation
-            if(propErrorComputation.isCurveError){
+            if (propErrorComputation.isCurveError) {
                 // Initialize variable storing the Gauss Point data
                 std::vector<double> streamCurveGP;
 
@@ -3040,9 +3057,10 @@ void IGAMortarMapper::computeIGAWeakDirichletSurfaceConditionMatrices() {
                                                             surfaceNormalVct, thePatch, tangentCurveVct, uGP, vGP, uKnotSpan, vKnotSpan);
 
             // 3xii.5. Compute the dual product matrices for the displacements
-            if (propWeakSurfaceDirichletConditions.isPrimPrescribed)
+            if (propWeakSurfaceDirichletConditions.isPrimPrescribed) {
                 EMPIRE::MathLibrary::computeTransposeMatrixProduct(noCoord,noDOFsLoc,noDOFsLoc,BDisplacementsGC,BDisplacementsGC,KPenaltyDisplacement);
-
+	    }
+		
             // 3xii.6. Compute the element index tables for the patch
             int CPIndex[noLocalBasisFcts];
             thePatch->getIGABasis()->getBasisFunctionsIndex(uKnotSpan, vKnotSpan, CPIndex);
@@ -3059,14 +3077,15 @@ void IGAMortarMapper::computeIGAWeakDirichletSurfaceConditionMatrices() {
             }
 
             // 3xii.8. Assemble KPenaltyDisplacement to the global coupling matrix CNN
-            if (propWeakSurfaceDirichletConditions.isPrimPrescribed)
+            if (propWeakSurfaceDirichletConditions.isPrimPrescribed) {
                 for(int i = 0; i < noDOFsLoc; i++){
                     for(int j = 0; j < noDOFsLoc; j++){
                         // Assemble the displacement coupling entries
                         couplingMatrices->addCNNValue(EFT[i], EFT[i], alphaPrimary*KPenaltyDisplacement[i*noDOFsLoc + i]*jacobianOnGP);
                     }
                 }
-
+	    }
+		
             //// 3xii.9. TODO Store the GP data into array for later usage in the error computation
         } // End of Gauss Point loop
 
@@ -3324,16 +3343,19 @@ void IGAMortarMapper::computeIGAPatchWeakContinuityConditionMatrices() {
                 normBOperatorOmegaTSlave = EMPIRE::MathLibrary::vector2norm(BOperatorOmegaTSlave, noDOFsLocSlave);
                 if (normBOperatorOmegaTSlave > alphaLocal)
                     alphaLocal = normBOperatorOmegaTSlave;
-            } else
+            } else {
                 alphaLocal = - 1.0;
-
+	    }
+		
             if (propWeakPatchContinuityConditions.isSecTwistingCoupled) {
                 normBOperatorOmegaNMaster = EMPIRE::MathLibrary::vector2norm(BOperatorOmegaNMaster, noDOFsLocMaster);
-                if (normBOperatorOmegaNMaster > alphaLocal)
+                if (normBOperatorOmegaNMaster > alphaLocal) {
                     alphaLocal = normBOperatorOmegaNMaster;
+		}
                 normBOperatorOmegaNSlave = EMPIRE::MathLibrary::vector2norm(BOperatorOmegaNSlave, noDOFsLocSlave);
-                if (normBOperatorOmegaNSlave > alphaLocal)
+                if (normBOperatorOmegaNSlave > alphaLocal) {
                     alphaLocal = normBOperatorOmegaNSlave;
+		}
             }
             alphaLocal = 1.0/abs(alphaLocal);
 
@@ -3360,10 +3382,11 @@ void IGAMortarMapper::computeIGAPatchWeakContinuityConditionMatrices() {
             cosPhiTangents = cosPhiTangents/(normTangentTrCurveVctMaster*normTangentTrCurveVctSlave);
 
             // 3xiii.13. Check if the tangent vectors at the coupled trimming curves are zero and if yes go to the next Gauss point
-            if(normTangentTrCurveVctMaster < tolVct && normTangentTrCurveVctSlave < tolVct)
+            if (normTangentTrCurveVctMaster < tolVct && normTangentTrCurveVctSlave < tolVct) {
                 continue;
-            else if((normTangentTrCurveVctMaster < tolVct && normTangentTrCurveVctSlave > tolVct) || (normTangentTrCurveVctMaster > tolVct && normTangentTrCurveVctSlave < tolVct))
+	    } else if ((normTangentTrCurveVctMaster < tolVct && normTangentTrCurveVctSlave > tolVct) || (normTangentTrCurveVctMaster > tolVct && normTangentTrCurveVctSlave < tolVct)) {
                 assert(false);
+	    }
 
             // 3xiii.14. Check if the tangent vectors are aligned and if not assert error
             condAligned = cosPhiTangents*cosPhiTangents - 1;
@@ -3390,17 +3413,19 @@ void IGAMortarMapper::computeIGAPatchWeakContinuityConditionMatrices() {
             cosPhiNormals = cosPhiTangents/(normNormalTrCurveVctMaster*normNormalTrCurveVctSlave);
 
             // 3xiii.17. Check if the normal vectors at the coupled trimming curves are zero and if yes go to the next Gauss point
-            if(normNormalTrCurveVctMaster < tolVct && normNormalTrCurveVctSlave < tolVct)
+            if(normNormalTrCurveVctMaster < tolVct && normNormalTrCurveVctSlave < tolVct) {
                 continue;
-            else if((normNormalTrCurveVctMaster < tolVct && normNormalTrCurveVctSlave > tolVct) || (normNormalTrCurveVctMaster > tolVct && normNormalTrCurveVctSlave < tolVct))
+	    } else if((normNormalTrCurveVctMaster < tolVct && normNormalTrCurveVctSlave > tolVct) || (normNormalTrCurveVctMaster > tolVct && normNormalTrCurveVctSlave < tolVct)) {
                 assert(false);
-
+	    }
+	    
             // 3xiii.18. Check if the boundary normal vectors have an angle of [0,90]U[270,360] meaning the the vectors are in the positive quadrant or [90,270] meaning that the vectors are in the negative quadrant
-            if (cosPhiNormals >= 0)
+            if (cosPhiNormals >= 0) {
                 factorNormal = + 1.0;
-            else
+            } else {
                 factorNormal = - 1.0;
-            factorNormal *= - 1.0;
+	    }
+	    factorNormal *= - 1.0;
 
             // Check whether the surface normal vectors have an angle of [0,90]U[270,360] meaning the the patches have the same normal orientation or [90,270] meaning that the patches have opossite normal orientation
 //            if (cosPhiSurfaceNormals < 0.0) {
@@ -3453,34 +3478,36 @@ void IGAMortarMapper::computeIGAPatchWeakContinuityConditionMatrices() {
             for(int i = 0; i < noDOFsLocMaster; i++){
                 for(int j = 0; j < noDOFsLocMaster; j++){
                     // 3xiii.24i. Assemble the displacement coupling entries
-                    if (propWeakPatchContinuityConditions.isPrimCoupled)
+		    if (propWeakPatchContinuityConditions.isPrimCoupled) {
                         couplingMatrices->addCNNValue(EFTMaster[i], EFTMaster[j], alphaPrimary*KPenaltyDisplacementMaster[i*noDOFsLocMaster + j]*elementLengthOnGP);
-
+		    }
                     // 3xiii.24ii. Assemble the bending rotation coupling entries
-                    if (propWeakPatchContinuityConditions.isSecBendingCoupled)
+                    if (propWeakPatchContinuityConditions.isSecBendingCoupled) {
                         couplingMatrices->addCNNValue(EFTMaster[i], EFTMaster[j], alphaSecondaryBending*KPenaltyBendingRotationMaster[i*noDOFsLocMaster + j]*elementLengthOnGP);
-
+		    }
                     // 3xiii.24iii. Assemble the twisting rotation coupling entries
-                    if (propWeakPatchContinuityConditions.isSecTwistingCoupled)
+                    if (propWeakPatchContinuityConditions.isSecTwistingCoupled) {
                         couplingMatrices->addCNNValue(EFTMaster[i], EFTMaster[j], alphaSecondaryTwisting*KPenaltyTwistingRotationMaster[i*noDOFsLocMaster + j]*elementLengthOnGP);
-                }
+		    }
+		}
             }
 
             // 3xiii.25. Loop over all DOFs of the slave patch to assemble KPenaltyDisplacementSlave to the global coupling matrix CNN
             for(int i = 0; i < noDOFsLocSlave; i++){
                 for(int j = 0; j < noDOFsLocSlave; j++) {
                     // 3xiii.25i. Assemble the displacement coupling entries
-                    if (propWeakPatchContinuityConditions.isPrimCoupled)
+		    if (propWeakPatchContinuityConditions.isPrimCoupled) {
                         couplingMatrices->addCNNValue(EFTSlave[i], EFTSlave[j], alphaPrimary*KPenaltyDisplacementSlave[i*noDOFsLocSlave + j]*elementLengthOnGP);
-
+		    }
                     // 3xiii.25ii. Assemble the bending rotation coupling entries
-                    if (propWeakPatchContinuityConditions.isSecBendingCoupled)
+                    if (propWeakPatchContinuityConditions.isSecBendingCoupled) {
                         couplingMatrices->addCNNValue(EFTSlave[i], EFTSlave[j], alphaSecondaryBending*KPenaltyBendingRotationSlave[i*noDOFsLocSlave + j]*elementLengthOnGP);
-
+		    }
                     // 3xiii.25iii. Assemble the twisting rotation coupling entries
-                    if (propWeakPatchContinuityConditions.isSecTwistingCoupled)
+                    if (propWeakPatchContinuityConditions.isSecTwistingCoupled) {
                         couplingMatrices->addCNNValue(EFTSlave[i], EFTSlave[j], alphaSecondaryTwisting*KPenaltyTwistingRotationSlave[i*noDOFsLocSlave + j]*elementLengthOnGP);
-                }
+		    }
+		}
             }
 
             // 3xiii.26. Loop over all DOFs of the master/slave patches to assemble CPenaltyDisplacement to the global coupling matrix CNN
@@ -3833,7 +3860,7 @@ void IGAMortarMapper::computePenaltyParametersForWeakDirichletCurveConditions(st
     // 4. Loop over all the conditions for the application of weak continuity across patch interfaces
     for (int iWDCC = 0; iWDCC < weakIGADirichletCurveConditions.size(); iWDCC++){
         // 4i. Check if penalty factors are to be assigned manually in the xml file
-        if(!propWeakCurveDirichletConditions.isAutomaticPenaltyParameters){
+        if (!propWeakCurveDirichletConditions.isAutomaticPenaltyParameters) {
             weakDirichletCCAlphaPrimary[iWDCC] = propWeakCurveDirichletConditions.alphaPrim;
             weakDirichletCCAlphaSecondaryBending[iWDCC] = propWeakCurveDirichletConditions.alphaSecBending;
             weakDirichletCCAlphaSecondaryTwisting[iWDCC] = propWeakCurveDirichletConditions.alphaSecTwisting;
@@ -3912,11 +3939,13 @@ void IGAMortarMapper::computePenaltyParametersForWeakDirichletCurveConditions(st
         } // End of Gauss Point loop
 
         // 4xv. Check the element sizes for the last elements
-        if(elEdgeSize < minElEdgeSize)
+        if (elEdgeSize < minElEdgeSize) {
             minElEdgeSize = elEdgeSize;
-        if (minElEdgeSize < minElEdgeSizeDirichlet)
+	}
+        if (minElEdgeSize < minElEdgeSizeDirichlet) {
             minElEdgeSizeDirichlet = minElEdgeSize;
-
+	}
+	
         // 4xvi. Compute correspondingly the penalty factors
         alphaPrim = pMax/minElEdgeSize;
         alphaSec = pMax/sqrt(minElEdgeSize);
@@ -4105,15 +4134,18 @@ void IGAMortarMapper::computePenaltyParametersForPatchContinuityConditions(std::
         pSlave = patchSlave->getIGABasis()->getUBSplineBasis1D()->getPolynomialDegree();
         qSlave = patchSlave->getIGABasis()->getVBSplineBasis1D()->getPolynomialDegree();
         pMaxMaster = pMaster;
-        if(pMaxMaster < qMaster)
+        if (pMaxMaster < qMaster) {
             pMaxMaster = qMaster;
+	}
         pMaxSlave = pSlave;
-        if(pMaxSlave < qSlave)
+        if (pMaxSlave < qSlave) {
             pMaxSlave = qSlave;
+	}
         pMax = pMaxMaster;
-        if(pMaxMaster < pMaxSlave)
+        if (pMaxMaster < pMaxSlave) {
             pMax = pMaxSlave;
-
+	}
+	
         // 4x. Get the number of local basis functions for master and slave patch
         noLocalBasisFctsMaster = (pMaster + 1)*(qMaster + 1);
         noLocalBasisFctsSlave = (pSlave + 1)*(qSlave + 1);
@@ -4160,13 +4192,15 @@ void IGAMortarMapper::computePenaltyParametersForPatchContinuityConditions(std::
 
             // 4xiv.6. Initialize element edge sizes if an element has been crossed
             if(uKnotSpanMaster != uKnotSpanMasterSaved || vKnotSpanMaster != vKnotSpanMasterSaved){
-                if(elEdgeSizeMaster < minElEdgeSizeMaster)
+	        if(elEdgeSizeMaster < minElEdgeSizeMaster) {
                     minElEdgeSizeMaster = elEdgeSizeMaster;
-                elEdgeSizeMaster = 0.0;
+		}
+		elEdgeSizeMaster = 0.0;
             }
             if(uKnotSpanSlave != uKnotSpanSlaveSaved || vKnotSpanSlave != vKnotSpanSlaveSaved){
-                if(elEdgeSizeSlave < minElEdgeSizeSlave)
+	        if (elEdgeSizeSlave < minElEdgeSizeSlave) {
                     minElEdgeSizeSlave = elEdgeSizeSlave;
+		}
                 elEdgeSizeSlave = 0.0;
             }
 
@@ -4182,19 +4216,22 @@ void IGAMortarMapper::computePenaltyParametersForPatchContinuityConditions(std::
         } // End of Gauss Point loop
 
         // 4xv. Check the element sizes for the last elements
-        if(elEdgeSizeMaster < minElEdgeSizeMaster)
-            minElEdgeSizeMaster = elEdgeSizeMaster;
-        if(elEdgeSizeSlave < minElEdgeSizeSlave)
+        if (elEdgeSizeMaster < minElEdgeSizeMaster) {
+	    minElEdgeSizeMaster = elEdgeSizeMaster;
+	}
+	if (elEdgeSizeSlave < minElEdgeSizeSlave) {
             minElEdgeSizeSlave = elEdgeSizeSlave;
-
+	}
+	    
         // 4xvi. Get the minimum of the minimum element edge sizes between both patches
         minElEdgeSize = minElEdgeSizeMaster;
-        if(minElEdgeSizeSlave < minElEdgeSize){
+        if (minElEdgeSizeSlave < minElEdgeSize) {
             minElEdgeSize = minElEdgeSizeSlave;
         }
-        if (minElEdgeSize < minElEdgeSizeInterface)
+        if (minElEdgeSize < minElEdgeSizeInterface) {
             minElEdgeSizeInterface = minElEdgeSize;
-
+	}
+	
         // 4xvii. Compute correspondingly the penalty factors
         alphaBar = pMax/minElEdgeSize;
         weakPatchContinuityAlphaPrimaryIJ[iWCC] = alphaBar;
@@ -4210,8 +4247,9 @@ void IGAMortarMapper::computePenaltyParametersForPatchContinuityConditions(std::
     } // End of weak continuity condition loop
 
     // 5. Close file
-    if (!_filename.empty())
+    if (!_filename.empty()) {
         ofs.close();
+    }
 }
 
 void IGAMortarMapper::consistentMapping(const double* _slaveField, double *_masterField) {
@@ -4301,24 +4339,27 @@ void IGAMortarMapper::computeErrorsConsistentMapping(const double* _slaveField, 
     double errorL2Curve[2];
 
     // 2. Compute the relative error in terms of the L2 norm of the error in the domain
-    if(propErrorComputation.isDomainError)
+    if (propErrorComputation.isDomainError) {
         errorL2Domain = computeDomainErrorInL2Norm4ConsistentMapping(_slaveField, _masterField);
-
+    }
+    
     // 3. Compute the L2 norm of the error along the Dirichlet boundary
-    if(propErrorComputation.isCurveError)
-        if(isMappingIGA2FEM){
+    if (propErrorComputation.isCurveError) {
+        if (isMappingIGA2FEM) {
             computeIGADirichletCurveErrorInL2Norm(errorL2Curve, _slaveField);
-        }else{
+        } else {
             computeIGADirichletCurveErrorInL2Norm(errorL2Curve, _masterField);
         }
-
+    }
+    
     // 4. Compute the L2 norm of the error along the patch interfaces
-    if(propErrorComputation.isInterfaceError)
-        if(isMappingIGA2FEM){
+    if (propErrorComputation.isInterfaceError) {
+        if (isMappingIGA2FEM) {
             computeIGAPatchInterfaceErrorInL2Norm(errorL2Interface, _slaveField);
-        }else{
+        } else {
             computeIGAPatchInterfaceErrorInL2Norm(errorL2Interface, _masterField);
         }
+    }
 
     // 5. Print messages on the errors
     printErrorMessage(infoOut, errorL2Domain, errorL2Curve, errorL2Interface);
@@ -4397,8 +4438,9 @@ double IGAMortarMapper::computeDomainErrorInL2Norm4ConsistentMapping(const doubl
         noNodesFE = streamGPs[iGP][2];
 
         // 2iv. Initialize the field on the finite element mesh at the Gauss point
-        for(int iCoord = 0; iCoord < noCoord; iCoord++)
+        for(int iCoord = 0; iCoord < noCoord; iCoord++) {
             fieldFEM[iCoord] = 0.0;
+	}
 
         // 2v. Loop over the nodes of the finite element
         for(int iNodesFE = 0; iNodesFE < noNodesFE; iNodesFE++){
@@ -4407,20 +4449,23 @@ double IGAMortarMapper::computeDomainErrorInL2Norm4ConsistentMapping(const doubl
 
             // 2v.2. Get the index of the node
             indexNode = streamGPs[iGP][3 + 2*iNodesFE];
-            for(int iCoord = 0; iCoord < noCoord; iCoord++)
-                if(!isMappingIGA2FEM) {
+            for (int iCoord = 0; iCoord < noCoord; iCoord++) {
+                if (!isMappingIGA2FEM) {
                     fieldFEM[iCoord] += basisFctFEM*_slaveField[noCoord*indexNode + iCoord];
-                } else
+                } else {
                     fieldFEM[iCoord] += basisFctFEM*_masterField[noCoord*indexNode + iCoord];
-        }
+		}
+	    }
+	}
 
         // 2vi. Get the number of basis functions of the isogeometric discretization
         noCPsIGA = streamGPs[iGP][3 + 2*noNodesFE];
 
         // 2vii. Initialize the field on the isogeometric discretization at the Gauss point
-        for(int iCoord = 0; iCoord < noCoord; iCoord++)
+        for(int iCoord = 0; iCoord < noCoord; iCoord++) {
             fieldIGA[iCoord] = 0.0;
-
+	}
+	
         // 2viii. Loop over the Control Points of the isogeometric discretization
         for(int iCPsIGA = 0; iCPsIGA < noCPsIGA; iCPsIGA++){
             // 2viii.1. Get the value of the basis function
@@ -4428,26 +4473,30 @@ double IGAMortarMapper::computeDomainErrorInL2Norm4ConsistentMapping(const doubl
 
             // 2viii.2. Get the index of the CP
             indexCP = streamGPs[iGP][3 + 2*noNodesFE + 2*iCPsIGA + 1];
-            for(int iCoord = 0; iCoord < noCoord; iCoord++)
-                if(!isMappingIGA2FEM)
+            for (int iCoord = 0; iCoord < noCoord; iCoord++) {
+	        if (!isMappingIGA2FEM) {
                     fieldIGA[iCoord] += basisFctIGA*_masterField[noCoord*indexCP + iCoord];
-                else
-                    fieldIGA[iCoord] += basisFctIGA*_slaveField[noCoord*indexCP + iCoord];
-        }
+		} else {
+		    fieldIGA[iCoord] += basisFctIGA*_slaveField[noCoord*indexCP + iCoord];
+		}
+	    }
+	}
 
         // 2ix. Compute the difference of the vectors on the Gauss Point
-        for(int iCoord = 0; iCoord < noCoord; iCoord++)
+        for (int iCoord = 0; iCoord < noCoord; iCoord++) {
             errorVct[iCoord] = fieldFEM[iCoord] - fieldIGA[iCoord];
-
+	}
+	
         // 2x. Compute the norm of the difference of the fields at the Gauss Point
         errorGPSquare = EMPIRE::MathLibrary::computeDenseDotProduct(noCoord, errorVct, errorVct);
 
         // 2xi. Compute the norm of the reference field at the Gauss Point
-        if(!isMappingIGA2FEM)
+        if (!isMappingIGA2FEM) {
             slaveFieldNorm = EMPIRE::MathLibrary::computeDenseDotProduct(noCoord, fieldFEM, fieldFEM);
-        else
+        } else {
             slaveFieldNorm = EMPIRE::MathLibrary::computeDenseDotProduct(noCoord, fieldIGA, fieldIGA);
-
+	}
+	
         // 2xii. Add the contributions from the Gauss Point
         errorL2Domain += errorGPSquare*JacobianProducts*GW;
         slaveFieldL2Domain += slaveFieldNorm*JacobianProducts*GW;
@@ -4456,11 +4505,12 @@ double IGAMortarMapper::computeDomainErrorInL2Norm4ConsistentMapping(const doubl
     // 3. Compute the relative L2 norm of the mapping error
     errorL2Domain = sqrt(errorL2Domain);
     slaveFieldL2Domain = sqrt(slaveFieldL2Domain);
-    if (slaveFieldL2Domain > tolNormSlaveField)
+    if (slaveFieldL2Domain > tolNormSlaveField) {
         errorL2Domain /= slaveFieldL2Domain;
-    else
+    } else {
         WARNING_OUT() << "The norm of the slave field is smaller than the tolerance, no division of the mapping error is made" << std::endl;
-
+    }
+    
     // 4. Return the relative L2 norm of the mapping error
     return errorL2Domain;
 }
@@ -4549,9 +4599,10 @@ void IGAMortarMapper::computeIGADirichletCurveErrorInL2Norm(double* _errorL2Curv
             basisFct = streamCurveGPs[iGP][1 + 1 + 2*iBFs + 1];
 
             // 2iv.3. Loop over all the Cartesian coordinates
-            for(int iCoord = 0; iCoord < noCoord; iCoord++)
+            for(int iCoord = 0; iCoord < noCoord; iCoord++) {
                 field[iCoord] += basisFct*_fieldIGA[noCoord*indexCP + iCoord];
-        }
+	    }
+	}
 
         // 2v. Loop over all the DOFs of the patch and compute the rotations of the field at the Gauss point
         for(int iDOFs = 0; iDOFs < noDOFs; iDOFs++){
@@ -4566,8 +4617,9 @@ void IGAMortarMapper::computeIGADirichletCurveErrorInL2Norm(double* _errorL2Curv
 
             // 2v.4. Compute the tangent and the bending rotations
             omegaT += BoperatorT*_fieldIGA[indexDOF];
-            if (propWeakCurveDirichletConditions.isSecTwistingPrescribed)
+            if (propWeakCurveDirichletConditions.isSecTwistingPrescribed) {
                 omegaN += BoperatorN*_fieldIGA[indexDOF];
+	    }
         }
 
         // 2vi. Compute the error vector for the displacements
@@ -4580,16 +4632,18 @@ void IGAMortarMapper::computeIGADirichletCurveErrorInL2Norm(double* _errorL2Curv
         // 2vii. Compute the error in terms of the rotations
         errorBendingRotation = omegaT + 0.0;
         errorTwistingRotation = omegaN + 0.0;
-        if (propWeakCurveDirichletConditions.isSecTwistingPrescribed)
+        if (propWeakCurveDirichletConditions.isSecTwistingPrescribed) {
             normRotationSquare = errorBendingRotation*errorBendingRotation + errorTwistingRotation*errorTwistingRotation;
-        else
+        } else {
             normRotationSquare = errorBendingRotation*errorBendingRotation;
-        _errorL2Curve[1] += normRotationSquare*elementLengthOnGP;
+	}
+	_errorL2Curve[1] += normRotationSquare*elementLengthOnGP;
     }
 
     // 3. Take the necessary for the norm square roots
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < 2; i++) {
         _errorL2Curve[i] = sqrt(_errorL2Curve[i]);
+    }
 }
 
 void IGAMortarMapper::computeIGAPatchInterfaceErrorInL2Norm(double* _errorL2Interface, const double *_fieldIGA){
@@ -4646,8 +4700,9 @@ void IGAMortarMapper::computeIGAPatchInterfaceErrorInL2Norm(double* _errorL2Inte
      */
 
     // 1. Initialize auxiliary arrays
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < 2; i++) {
         _errorL2Interface[i] = 0.0;
+    }
     int noCPsI;
     int noCPsJ;
     int noDOFsI;
@@ -4701,9 +4756,10 @@ void IGAMortarMapper::computeIGAPatchInterfaceErrorInL2Norm(double* _errorL2Inte
             basisFct = streamInterfaceGPs[iGP][1 + 1 + 2*iBFs + 1];
 
             // 2iv.3. Loop over all the Cartesian coordinates
-            for(int iCoord = 0; iCoord < noCoord; iCoord++)
+            for(int iCoord = 0; iCoord < noCoord; iCoord++) {
                 fieldI[iCoord] += basisFct*_fieldIGA[noCoord*indexCP + iCoord];
-        }
+	    }
+	}
 
         // 2v. Loop over all the DOFs of patch I and compute the rotations of the field at the Gauss point
         for(int iDOFs = 0; iDOFs < noDOFsI; iDOFs++){
@@ -4767,8 +4823,9 @@ void IGAMortarMapper::computeIGAPatchInterfaceErrorInL2Norm(double* _errorL2Inte
 
         // 2xi. Compute the error in terms of the rotations
         errorBendingRotation = omegaTI + factorTangent*omegaTJ;
-        if (propWeakPatchContinuityConditions.isSecTwistingCoupled)
+        if (propWeakPatchContinuityConditions.isSecTwistingCoupled) {
             errorTwistingRotation = omegaNI + factorNormal*omegaNJ;
+	}
         normRotationSquare = errorBendingRotation*errorBendingRotation + errorTwistingRotation*errorTwistingRotation;
         _errorL2Interface[1] += normRotationSquare*elementLengthOnGP;
     }
@@ -4952,16 +5009,19 @@ void IGAMortarMapper::writeCartesianProjectedPolygon(const string _filename, std
 
 void IGAMortarMapper::debugPolygon(const Polygon2D& _polygon, string _name) {
     DEBUG_OUT()<<"----------------------------------"<<endl;
-    if(_name!="")
+    if(_name!="") {
         DEBUG_OUT()<<"Polygon name : "<<_name<<endl;
-    for(int i=0; i<_polygon.size();i++)
+    }
+    for(int i=0; i<_polygon.size();i++) {
         DEBUG_OUT()<<"\t"<<"u="<<_polygon[i].first<<" / v="<<_polygon[i].second<<endl;
+    }
     DEBUG_OUT()<<"----------------------------------"<<endl;
 }
 void IGAMortarMapper::debugPolygon(const ListPolygon2D& _listPolygon, string _name) {
     DEBUG_OUT()<<"++++++++++++++++++++++++++"<<endl;
-    if(_name!="")
+    if(_name!="") {
         DEBUG_OUT()<<"Polygon list name : "<<_name<<endl;
+    }
     for(int i=0; i<_listPolygon.size();i++) {
         DEBUG_OUT()<<"Polygon index : "<<i<<endl;
         debugPolygon(_listPolygon[i]);
@@ -4980,7 +5040,7 @@ void IGAMortarMapper::printCouplingMatrices() {
 void IGAMortarMapper::writeCouplingMatricesToFile() {
     DEBUG_OUT()<<"### Printing matrices into file ###"<<endl;
     DEBUG_OUT()<<"Size of Cnr is "<<numNodesMaster<<" by "<<numNodesSlave<<endl;
-    if(Message::isDebugMode()) {
+    if (Message::isDebugMode()) {
         couplingMatrices->getCnr()->printCSRToFile(name + "_Cnr.dat",1);
         couplingMatrices->getCnn()->printCSRToFile(name + "_Cnn.dat",1);
     }
@@ -5042,8 +5102,9 @@ void IGAMortarMapper::enforceConsistency() {
     norm = 0;
     vector<int> inconsistentDoF;
     for(int i = 0; i < size_N; i++) {
-        if(fabs(output[i] - 1) > propConsistency.tolConsistency && output[i] != 0)
+        if (fabs(output[i] - 1) > propConsistency.tolConsistency && output[i] != 0) {
             inconsistentDoF.push_back(i);
+	}
         norm += output[i]*output[i];
     }
 
@@ -5069,9 +5130,10 @@ void IGAMortarMapper::enforceConsistency() {
         for(int i = 0; i < size_N; i++) {
             norm += output[i]*output[i];
         }
-    } else // ### If the array of the inconsistent DOFs not zero ###
+    } else {// ### If the array of the inconsistent DOFs not zero ###
         INFO_OUT() << "Mapping found consistent up to specified tolerance" << std::endl;
-
+    }
+    
     // 7. Compute the norm of the mapped field
     denom = size_N - couplingMatrices->getIndexEmptyRowCnn().size();
     norm = sqrt(norm/denom);
@@ -5085,15 +5147,15 @@ void IGAMortarMapper::enforceConsistency() {
     }
 
     // 9. Delete pointers
-    delete ones;
-    delete output;
+    delete[] ones;
+    delete[] output;
 }
 
 void IGAMortarMapper::getPenaltyParameterForWeakDirichletCCPrimaryField(double* _alphaPrim){
     if( propWeakCurveDirichletConditions.isWeakCurveDirichletConditions ){
         for(int i = 0; i < noWeakIGADirichletCurveConditions; i++)
             _alphaPrim[i] = weakDirichletCCAlphaPrimary[i];
-    }else{
+    } else {
         ERROR_OUT() << "Penalty parameters were not computed" << std::endl;
         exit(-1);
     }
@@ -5103,7 +5165,7 @@ void IGAMortarMapper::getPenaltyParameterForWeakDirichletCCSecondaryFieldBending
     if( propWeakCurveDirichletConditions.isWeakCurveDirichletConditions ){
         for(int i = 0; i < noWeakIGADirichletCurveConditions; i++)
             _alphaSecBending[i] = weakDirichletCCAlphaSecondaryBending[i];
-    }else{
+    } else {
         ERROR_OUT() << "Penalty parameters were not computed" << std::endl;
         exit(-1);
     }
@@ -5124,7 +5186,7 @@ void IGAMortarMapper::getPenaltyParameterForPatchContinuityPrimaryField(double* 
     if(propWeakPatchContinuityConditions.isWeakPatchContinuityConditions){
         for(int i = 0; i < noWeakIGAPatchContinuityConditions; i++)
             _alphaPrim[i] = weakPatchContinuityAlphaPrimaryIJ[i];
-    }else{
+    } else {
         ERROR_OUT() << "Penalty parameters were not computed" << std::endl;
         exit(-1);
     }
@@ -5134,7 +5196,7 @@ void IGAMortarMapper::getPenaltyParameterForPatchContinuitySecondaryFieldBending
     if(propWeakPatchContinuityConditions.isWeakPatchContinuityConditions){
         for(int i = 0; i < noWeakIGAPatchContinuityConditions; i++)
             _alphaSecBending[i] = weakPatchContinuityAlphaSecondaryBendingIJ[i];
-    }else{
+    } else {
         ERROR_OUT() << "Penalty parameters were not computed" << std::endl;
         exit(-1);
     }
@@ -5144,7 +5206,7 @@ void IGAMortarMapper::getPenaltyParameterForPatchContinuitySecondaryFieldTwistin
     if(propWeakPatchContinuityConditions.isWeakPatchContinuityConditions){
         for(int i = 0; i < noWeakIGAPatchContinuityConditions; i++)
             _alphaSecTwisting[i] = weakPatchContinuityAlphaSecondaryTwistingIJ[i];
-    }else{
+    } else {
         ERROR_OUT() << "Penalty parameters were not computed" << std::endl;
         exit(-1);
     }
@@ -5156,19 +5218,19 @@ void IGAMortarMapper::printErrorMessage(Message &message, double _errorL2Domain,
      */
     message << std::endl;
     message() << "\t+" << "Mapping error: " << std::endl;
-    if(propErrorComputation.isDomainError) {
+    if (propErrorComputation.isDomainError) {
         message << "\t\t+" << '\t' << "L2 norm of the error in the domain: " << _errorL2Domain << std::endl;
         message << "\t\t+" << '\t' << "(minElArea: " << getMinElArea() << ")" << std::endl;
         message << "\t\t+" << '\t' << "(minEdgeSize: " << getMinEdgeSize() << ")" << std::endl;
         message << std::endl;
     }
-    if(propErrorComputation.isCurveError){
+    if (propErrorComputation.isCurveError){
         message << "\t\t+" << '\t' << "L2 norm of the field along the Dirichlet boundary: " << _errorL2Curve[0] << std::endl;
         message << "\t\t+" << '\t' << "L2 norm of the field rotation along the Dirichlet boundary: " << _errorL2Curve[1] << std::endl;
         message << "\t\t+" << '\t' << "(minElEdgeSizeDirichlet: " << getMinElEdgeSizeDirichlet() << ")" << std::endl;
         message << std::endl;
     }
-    if(propErrorComputation.isInterfaceError){
+    if (propErrorComputation.isInterfaceError){
         message << "\t\t+" << '\t' << "L2 norm of the field interface jump: " << _errorL2Interface[0] << std::endl;
         message << "\t\t+" << '\t' << "L2 norm of the field rotation interface jump: " << _errorL2Interface[1] << std::endl;
         message << "\t\t+" << '\t' << "(minElEdgeSizeInterface: " << getMinElEdgeSizeInterface() << ")" << std::endl;
