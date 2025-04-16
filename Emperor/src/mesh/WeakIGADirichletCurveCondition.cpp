@@ -268,7 +268,7 @@ void WeakIGADirichletCurveCondition::getCurveGPData(double* _curveGP, double& _c
     // Check if the GP data is initialized
     if (!isGPDataInitialized) assert(false);
     // Check if the given arrays are initialized
-    if (_curveGP == NULL || _curveGPWeight == NULL || _curveGPTangent == NULL || _curveGPJacobianProduct == NULL) assert(false);
+    if (_curveGP == NULL || _curveGPTangent == NULL ) assert(false);
     // Check if the counter exceeds the number of GPs
     if (_iGP == curveNumGP) assert(false);
 
