@@ -2139,7 +2139,7 @@ void IGAPatchSurface::findInitialGuess4PointProjection(double& _u, double& _v, d
         }
 }
 
-bool IGAPatchSurface::findInitialGuess4PointProjectionOnTrimmingCurve(double& _uTilde, double& _u, double& _v,
+void IGAPatchSurface::findInitialGuess4PointProjectionOnTrimmingCurve(double& _uTilde, double& _u, double& _v,
                                                                       double* _P, int _patchBLIndex, int _patchBLTrCurveIndex){
     /*
      * This function computes an initial guess for projection of a cartesian point onto a trimming curve belonging to a patch.
@@ -2215,7 +2215,7 @@ bool IGAPatchSurface::findInitialGuess4PointProjectionOnTrimmingCurve(double& _u
 
 }
 
-bool IGAPatchSurface::findInitialGuess4PointProjectionOnTrimmingCurve(double& _uTilde, double& _u, double& _v,
+void IGAPatchSurface::findInitialGuess4PointProjectionOnTrimmingCurve(double& _uTilde, double& _u, double& _v,
                                                                       double* _P, IGAPatchCurve* _curve){
     /*
      * This function computes an initial guess for projection of a cartesian point onto a trimming curve belonging to a patch.

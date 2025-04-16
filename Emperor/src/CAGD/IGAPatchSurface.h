@@ -434,7 +434,7 @@ public:
      * \param[in] _patchBLTrCurveIndex The index of the trimming curve in the boundary loop
      * \author Altug Emiroglu
      ***********/
-    bool findInitialGuess4PointProjectionOnTrimmingCurve(double& _uTilde, double& _u, double& _v, double* _P, int _patchBLIndex, int _patchBLTrCurveIndex);
+    void findInitialGuess4PointProjectionOnTrimmingCurve(double& _uTilde, double& _u, double& _v, double* _P, int _patchBLIndex, int _patchBLTrCurveIndex);
 
     /***********************************************************************************************
      * \brief Find the nearest vertex from the linearization of the trimming curve as an initial guess for the projection
@@ -444,7 +444,7 @@ public:
      * \param[in] _curve The trimming curve to project the point onto
      * \author Altug Emiroglu
      ***********/
-    bool findInitialGuess4PointProjectionOnTrimmingCurve(double& _uTilde, double& _u, double& _v,
+    void findInitialGuess4PointProjectionOnTrimmingCurve(double& _uTilde, double& _u, double& _v,
                                                                           double* _P, IGAPatchCurve* _curve);
 
     /***********************************************************************************************
