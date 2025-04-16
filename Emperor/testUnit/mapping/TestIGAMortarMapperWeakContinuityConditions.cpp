@@ -1259,12 +1259,12 @@ public:
                                                                                                trCurveGPJacobianProducts);
 
         // delete the pointers after object creation
-        delete trCurveMasterGPs;
-        delete trCurveSlaveGPs;
-        delete trCurveGPWeights;
-        delete trCurveMasterGPTangents;
-        delete trCurveSlaveGPTangents;
-        delete trCurveGPJacobianProducts;
+        delete[] trCurveMasterGPs;
+        delete[] trCurveSlaveGPs;
+        delete[] trCurveGPWeights;
+        delete[] trCurveMasterGPTangents;
+        delete[] trCurveSlaveGPTangents;
+        delete[] trCurveGPJacobianProducts;
 
     }
 
@@ -1821,12 +1821,12 @@ public:
             CPPUNIT_ASSERT(fabs(referenceTrCurveGPWeights[i] - computedTrCurveGPWeights[i]) < Tol);
         }
 
-        delete referenceTrCurveMasterGPs;
-        delete referenceTrCurveSlaveGPs;
-        delete referenceTrCurveGPWeights;
-        delete referenceTrCurveMasterGPTangents;
-        delete referenceTrCurveSlaveGPTangents;
-        delete referenceTrCurveGPJacobianProducts;
+        delete[] referenceTrCurveMasterGPs;
+        delete[] referenceTrCurveSlaveGPs;
+        delete[] referenceTrCurveGPWeights;
+        delete[] referenceTrCurveMasterGPTangents;
+        delete[] referenceTrCurveSlaveGPTangents;
+        delete[] referenceTrCurveGPJacobianProducts;
 
     }
 
