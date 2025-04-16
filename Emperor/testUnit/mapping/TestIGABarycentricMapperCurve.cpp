@@ -278,15 +278,15 @@ public:
         theMapper->setParametersProjection(7.5, 10, 1e-3);
         theMapper->buildCouplingMatrices();
 	
-	delete controlPointID;
-	delete uKnotVector1;
-	delete uKnotVector2;
-	delete vKnotVector1;
-	delete vKnotVector2;
-	delete controlPointNet1;
-	delete controlPointNet2;
-	delete dofIndexNet1;
-	delete dofIndexNet2;
+	delete[] controlPointID;
+	delete[] uKnotVector1;
+	delete[] uKnotVector2;
+	delete[] vKnotVector1;
+	delete[] vKnotVector2;
+	delete[] controlPointNet1;
+	delete[] controlPointNet2;
+	delete[] dofIndexNet1;
+	delete[] dofIndexNet2;
     }
 
     void tearDown() {
