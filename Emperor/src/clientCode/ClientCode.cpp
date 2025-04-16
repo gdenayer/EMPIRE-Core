@@ -26,7 +26,7 @@
 #include "AbstractMesh.h"
 #include "FEMesh.h"
 #include "SectionMesh.h"
-#include "IGAMesh.h"	 	
+#include "IGAMesh.h"
 #include "IGAPatchSurface.h"
 #include "WeakIGADirichletCurveCondition.h"
 #include "WeakIGAPatchContinuityCondition.h"
@@ -75,11 +75,11 @@ void ClientCode::recvFEMesh(std::string meshName, bool triangulateAll) {
 
     FEMesh *mesh = new FEMesh(meshName, numNodes, numElems, triangulateAll);
     serverComm->receiveFromClientBlocking<double>(name, numNodes * 3, mesh->nodes);
-	serverComm->receiveFromClientBlocking<int>(name, numNodes, mesh->nodeIDs);
+    serverComm->receiveFromClientBlocking<int>(name, numNodes, mesh->nodeIDs);
     serverComm->receiveFromClientBlocking<int>(name, numElems, mesh->numNodesPerElem);
     mesh->initElems();
     serverComm->receiveFromClientBlocking<int>(name, mesh->elemsArraySize, mesh->elems);
-	nameToMeshMap.insert(pair<string, AbstractMesh*>(meshName, mesh));
+    nameToMeshMap.insert(pair<string, AbstractMesh*>(meshName, mesh));
     { // output to shell
         DEBUG_OUT() << (*mesh) << endl;
         mesh->computeBoundingBox();
@@ -228,10 +228,10 @@ void ClientCode::copyMesh(std::string meshName, AbstractMesh *meshToCopyFrom) {
                     uNoControlPoints, vNoControlPoints, controlPointNet, dofIndexNet);
 
             // deleting the pointers after object creation
-            delete uKnotVector;
-            delete vKnotVector;
-            delete controlPointNet;
-            delete dofIndexNet;
+            delete[] uKnotVector;
+            delete[] vKnotVector;
+            delete[] controlPointNet;
+            delete[] dofIndexNet;
 
             // Add and linearize the trimming curves
             int isTrimmed = igaMesh->getSurfacePatch(patchCount)->getTrimming().isTrimmed();
@@ -333,10 +333,10 @@ void ClientCode::recvIGAMesh(std::string meshName) {
                 uNoControlPoints, vNoControlPoints, controlPointNet, dofIndexNet);
 
         // deleting the pointers after object creation
-        delete uKnotVector;
-        delete vKnotVector;
-        delete controlPointNet;
-        delete dofIndexNet;
+        delete[] uKnotVector;
+        delete[] vKnotVector;
+        delete[] controlPointNet;
+        delete[] dofIndexNet;
 
         // Add and linearize the trimming curves
         int trimInfo[2];
@@ -354,29 +354,28 @@ void ClientCode::recvIGAMesh(std::string meshName) {
                 int inner = loopInfo[0];
                 int numCurves = loopInfo[1];
                 thePatch->addTrimLoop(inner, numCurves);
-                
+
                 const int BUFFER_SIZE_CURVE = 4;
                 int curveInfo[BUFFER_SIZE_CURVE];
                 //Get every curve
                 for(int curveCount = 0; curveCount < numCurves; curveCount++) {
                     serverComm->receiveFromClientBlocking<int>(name, BUFFER_SIZE_CURVE, curveInfo);
-                    
+
                     int direction = curveInfo[0];
                     int pDegree = curveInfo[1];
                     int uNoKnots = curveInfo[2];
                     int uNoControlPoints = curveInfo[3];
-                    
+
                     double* uKnotVector = new double[uNoKnots];
                     double controlPointNet[uNoControlPoints * 4];
 
                     serverComm->receiveFromClientBlocking<double>(name, uNoKnots, uKnotVector);
                     serverComm->receiveFromClientBlocking<double>(name, uNoControlPoints * 4, controlPointNet);
 
-                    thePatch->addTrimCurve(direction, pDegree, uNoKnots, uKnotVector,
-                    		uNoControlPoints, controlPointNet);
+                    thePatch->addTrimCurve(direction, pDegree, uNoKnots, uKnotVector, uNoControlPoints, controlPointNet);
 
                     // deleting the pointers after object creation
-                    delete uKnotVector;
+                    delete[] uKnotVector;
 
                 } // end curve
             } // end trimming loops
@@ -424,10 +423,10 @@ void ClientCode::recvIGAMesh(std::string meshName) {
                                                trCurveGPJacobianProducts);
 
             // deleting the pointers after object creation
-            delete trCurveGPs;
-            delete trCurveGPWeights;
-            delete trCurveGPTangents;
-            delete trCurveGPJacobianProducts;
+            delete[] trCurveGPs;
+            delete[] trCurveGPWeights;
+            delete[] trCurveGPTangents;
+            delete[] trCurveGPJacobianProducts;
 
         } else {
             theIGAMesh->createWeakDirichletCurveConditionGPData(wDCCtr);
@@ -482,12 +481,12 @@ void ClientCode::recvIGAMesh(std::string meshName) {
                                                trCurveGPJacobianProducts);
 
             // deleting the pointers after object creation
-            delete trCurveMasterGPs;
-            delete trCurveSlaveGPs;
-            delete trCurveGPWeights;
-            delete trCurveMasterGPTangents;
-            delete trCurveSlaveGPTangents;
-            delete trCurveGPJacobianProducts;
+            delete[] trCurveMasterGPs;
+            delete[] trCurveSlaveGPs;
+            delete[] trCurveGPWeights;
+            delete[] trCurveMasterGPTangents;
+            delete[] trCurveSlaveGPTangents;
+            delete[] trCurveGPJacobianProducts;
 
         } else {
             theIGAMesh->createWeakContinuityConditionGPData(wPCCCtr);
