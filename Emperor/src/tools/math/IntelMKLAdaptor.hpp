@@ -77,7 +77,7 @@ private:
 	/// pardiso variable
 	double pardiso_alpha;
 	/// pardiso variable
-	char *pardiso_descra;
+	const char *pardiso_descra;
 	/// pardiso variable
 	double pardiso_beta;
 	/// pardiso variable
@@ -102,7 +102,11 @@ public:
 		for(int i=0; i<64; i++)
 			pardiso_pt[i] = 0;
 
-		pardiso_descra = "G00F"; // general matrix, indexing from 1
+		const char* pardiso_descra = "G00F"; // general matrix, indexing from 1
+		// G: General matrix
+		// 0: 1-based indexing
+		// 0: No special storage
+		// F: Possibly default or fill-in related (less documented)
 		pardiso_alpha = 1.0;
 		pardiso_beta = 0.0;
 		mklSetNumThreads = 1;  /// OpenMP parallelization variable
