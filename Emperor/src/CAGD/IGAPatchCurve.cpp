@@ -485,7 +485,7 @@ bool IGAPatchCurve::computePointProjectionOn2DCurve(double& _uPrm, double* _P, i
     if(_noCoord == 2){
         P[0] = _P[0];
         P[1] = _P[1];
-        P[3] = 0.0;
+        P[2] = 0.0;
     }else if(_noCoord == 3){
         for(int iCoord = 0; iCoord < noCoord; iCoord++)
             P[iCoord] = _P[iCoord];
