@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     Emperor *emperor = new Emperor();
 
     emperor->initEnvironment(&argc, &argv);
-    omp_set_nested(1); /// Enable nested parallelism
+    // omp_set_nested(1); /// Enable nested parallelism
     omp_set_max_active_levels(2); /// Max two levels of nested parallelism
     omp_set_dynamic(0); /// I take full control
 
