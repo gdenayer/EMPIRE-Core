@@ -60,7 +60,7 @@ NearestElementMapper::NearestElementMapper(int _numNodesA, int _numElemsA,
 }
 
 NearestElementMapper::~NearestElementMapper() {
-    delete numNodesPerNeighborElem;
+    delete[] numNodesPerNeighborElem;
     for (int i = 0; i < numNodesB; i++)
         delete[] neighborsTable->at(i);
     delete neighborsTable;
