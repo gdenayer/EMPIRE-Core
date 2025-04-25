@@ -54,8 +54,8 @@ BarycentricInterpolationMapper::BarycentricInterpolationMapper(int _numNodesA,
 }
 
 BarycentricInterpolationMapper::~BarycentricInterpolationMapper() {
-    delete neighborsTable;
-    delete weightsTable;
+    delete[] neighborsTable;
+    delete[] weightsTable;
 }
 
 void BarycentricInterpolationMapper::consistentMapping(const double *fieldA, double *fieldB) {
