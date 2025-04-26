@@ -191,7 +191,9 @@ void IJCSA::init() {
 	}
 	globalResidual = new double[globalResidualSize];
 	correctorVec   = new double[globalResidualSize];
-	interfaceJacGlobal = new EMPIRE::MathLibrary::SparseMatrix<double>(globalResidualSize,true);
+	// in the EMPIRE version of S. Sicklinger and in its thesis this matrix is not symmetric.
+	// If set to true, the benchmark "LinearTwoSpringDynamicIterativeIJCSA" crashes.
+	interfaceJacGlobal = new EMPIRE::MathLibrary::SparseMatrix<double>(globalResidualSize,false);
 
 
 	assembleInterfaceJacobian();
