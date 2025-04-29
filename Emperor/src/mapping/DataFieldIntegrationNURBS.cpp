@@ -71,8 +71,8 @@ DataFieldIntegrationNURBS::~DataFieldIntegrationNURBS() {
 
     // Delete the quadrature rules
     for (int iPatches = 0; iPatches < numPatches; iPatches++) {
-        delete[] gaussRuleOnTriangle[iPatches];
-        delete[] gaussRuleOnQuadrilateral[iPatches];
+        delete gaussRuleOnTriangle[iPatches];
+        delete gaussRuleOnQuadrilateral[iPatches];
     }
     delete[] gaussRuleOnTriangle;
     delete[] gaussRuleOnQuadrilateral;
