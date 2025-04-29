@@ -50,7 +50,7 @@ IJCSA::IJCSA(std::string _name) :
 IJCSA::~IJCSA() {
 	delete[] globalResidual;
 	delete[] correctorVec;
-	delete[] interfaceJacGlobal;
+	delete interfaceJacGlobal;
 }
 
 void IJCSA::calcNewValue() {
