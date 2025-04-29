@@ -313,10 +313,10 @@ WeakIGADirichletCurveCondition::~WeakIGADirichletCurveCondition() {
     if (!isTrimmingCurve)
         delete dirichletCurve;
     if (isGPDataInitialized) {
-        delete curveGPs;
-        delete curveGPWeights;
-        delete curveGPTangents;
-        delete curveGPJacobianProducts;
+        delete[] curveGPs;
+        delete[] curveGPWeights;
+        delete[] curveGPTangents;
+        delete[] curveGPJacobianProducts;
     }
 }
 
