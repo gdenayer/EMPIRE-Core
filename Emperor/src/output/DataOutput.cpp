@@ -23,7 +23,7 @@
 #include "MetaDataStructures.h"
 #include "GiDFileIO.h"
 #include "MatlabIGAFileIO.h"
-#include "GiDIGAFileIO.h" //
+#include "GiDIGAFileIO.h"
 #include "AbstractMesh.h"
 #include "FEMesh.h"
 #include "IGAMesh.h"
@@ -117,11 +117,11 @@ void DataOutput::initDataFieldFiles() {
         assert(nameToClientCodeMap.find(clientCodeName) != nameToClientCodeMap.end());
         AbstractMesh *mesh = nameToClientCodeMap[clientCodeName]->getMeshByName(meshName);
         if (mesh->type == EMPIRE_Mesh_FEMesh || mesh->type == EMPIRE_Mesh_SectionMesh) {
-        	dataFieldFileName.append(".res");
+            dataFieldFileName.append(".res");
             FEMesh *feMesh = dynamic_cast<FEMesh*>(mesh);
             dataFieldFileNameToMeshMap.insert(pair<string, FEMesh*>(dataFieldFileName, feMesh));
         } else if (mesh->type == EMPIRE_Mesh_IGAMesh) {
-        	GiDIGAFileIO::initDotPostRes(dataFieldFileName);
+            GiDIGAFileIO::initDotPostRes(dataFieldFileName);
         } else
             assert(0);
     }
@@ -153,7 +153,7 @@ void DataOutput::writeDataFields(int step) {
             string dataFieldFileName = dataOutputName + UNDERSCORE + clientCodeName + UNDERSCORE
                     + meshName;
             if (mesh->type == EMPIRE_Mesh_FEMesh || mesh->type == EMPIRE_Mesh_SectionMesh) {
-            	dataFieldFileName.append(".res");
+                dataFieldFileName.append(".res");
                 FEMesh *feMesh = dynamic_cast<FEMesh*>(mesh);
                 DataField *dataField = feMesh->getDataFieldByName(dataFieldName);
                 bool atNode = (dataField->location == EMPIRE_DataField_atNode ? true : false);
@@ -229,8 +229,8 @@ void DataOutput::writeDataFields(int step) {
                 else if (dataField->dimension == EMPIRE_DataField_scalar) {type = "scalar";}
                 else {assert(false);}
 
-				IGAMesh* igaMesh = dynamic_cast<IGAMesh*>(mesh);
-				GiDIGAFileIO::appendCPDataToDotRes(dataFieldFileName, dataFieldName,"\"EMPIRE_CoSimulation\"", step, type, dataField, igaMesh);
+                IGAMesh* igaMesh = dynamic_cast<IGAMesh*>(mesh);
+                GiDIGAFileIO::appendCPDataToDotRes(dataFieldFileName, dataFieldName,"\"EMPIRE_CoSimulation\"", step, type, dataField, igaMesh);
             } else {
                 assert(0);
             }
