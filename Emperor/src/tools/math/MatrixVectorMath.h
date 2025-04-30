@@ -290,15 +290,15 @@ public:
      ***********/
     virtual ~SparseMatrix() {
 #ifdef USE_INTEL_MKL
-    	//std::cout<<"Cleaning Pardiso"<<std::endl;
-    	if(clearCount > 0){
-    	 intelMKL->cleanPardiso(&values[0], &((*rowIndex)[0]), &columns[0]);
-    	 clearCount++;
-    	}
+        //std::cout<<"Cleaning Pardiso"<<std::endl;
+        if(clearCount > 0){
+         intelMKL->cleanPardiso(&values[0], &((*rowIndex)[0]), &columns[0]);
+         clearCount++;
+        }
 
         if(intelMKL != NULL){
-        	//std::cout<<"Deleting intelMKL :: "<<intelMKL<<std::endl;
-        	//std::cout<<""<<std::endl;
+           //std::cout<<"Deleting intelMKL :: "<<intelMKL<<std::endl;
+           //std::cout<<""<<std::endl;
            delete intelMKL;
         }
         delete mat;
@@ -364,122 +364,122 @@ public:
      * \author Stefan Sicklinger
      ***********/
     void determineCSR() {
-    	// Check if this function is already called once.
-    	if(isDetermined)
-    		return;
+        // Check if this function is already called once.
+        if(isDetermined)
+           return;
 
 #ifdef USE_INTEL_MKL
-    	columns.clear();
-    	values.clear();
-    	row_iter ii;
-    	col_iter jj;
-    	size_t ele_row = 0; //elements in current row
-    	std::cout << std::scientific;
+        columns.clear();
+        values.clear();
+        row_iter ii;
+        col_iter jj;
+        size_t ele_row = 0; //elements in current row
+        std::cout << std::scientific;
 
-    	for (ii = 0; ii < m; ii++) {
-    		(*rowIndex)[ii] = (ele_row + 1);
-    		for (jj = (*mat)[ii].begin(); jj != (*mat)[ii].end(); jj++) {
-    			columns.push_back(((*jj).first) + 1);
-    			values.push_back((*jj).second);
-    			ele_row++;
-    		}
+        for (ii = 0; ii < m; ii++) {
+                (*rowIndex)[ii] = (ele_row + 1);
+                for (jj = (*mat)[ii].begin(); jj != (*mat)[ii].end(); jj++) {
+                        columns.push_back(((*jj).first) + 1);
+                        values.push_back((*jj).second);
+                        ele_row++;
+               }
 
-    	}
-    	(*rowIndex)[m] = (ele_row + 1);
+        }
+        (*rowIndex)[m] = (ele_row + 1);
 
-    	// Tell the matrix that it is determined once.
-    	isDetermined = true;
+        // Tell the matrix that it is determined once.
+        isDetermined = true;
 #elif USE_EIGEN
-    	makeFullMatrix();
-    	isFull = true;
-    	eigenMat->determineCSR();
-    	// Tell the matrix that it is determined once.
-    	isDetermined = true;
+        makeFullMatrix();
+        isFull = true;
+        eigenMat->determineCSR();
+        // Tell the matrix that it is determined once.
+        isDetermined = true;
 #endif
     }
 
 
     /***********************************************************************************************
      * \brief This function is a fast alternative to the operator overloading alternative
-     * \param[in] 	-- transpose 	Bool flag specifying if a transpose of the matrix should be multiplied or not.
-     * \param[in] 	-- x 			vector to be multiplied
-     * \param[out] 	-- y 			result vector
-     * \param[in] 	-- elements 	are the number of entries in the resultant vector (number of rows of the matrix m)
+     * \param[in]       -- transpose    Bool flag specifying if a transpose of the matrix should be multiplied or not.
+     * \param[in]       -- x            vector to be multiplied
+     * \param[out]      -- y            result vector
+     * \param[in]       -- elements     are the number of entries in the resultant vector (number of rows of the matrix m)
      * \author Stefan Sicklinger
      * \edit   Aditya Ghantasala
      ***********/
     void mulitplyVec(bool transpose, T* vec, T* resultVec, size_t elements) { //Computes y=A*x
 
-    	// Checking the possibility of multiplication.
-    	assert(elements == m);
-    	assert(vec != NULL);
-    	assert(resultVec != NULL);
+        // Checking the possibility of multiplication.
+        assert(elements == m);
+        assert(vec != NULL);
+        assert(resultVec != NULL);
 
-    	// Formulating the vectors of the sparse matrix
-    	determineCSR();
+        // Formulating the vectors of the sparse matrix
+        determineCSR();
 
 #ifdef USE_INTEL_MKL
-    	T sum;
-    	size_t iter;
-    	for (iter = 0; iter < elements; iter++) {
-    		resultVec[iter] = 0;
-    	}
+        T sum;
+        size_t iter;
+        for (iter = 0; iter < elements; iter++) {
+                resultVec[iter] = 0;
+        }
 
-    	row_iter ii;
-    	col_iter jj;
+        row_iter ii;
+        col_iter jj;
 
-    	for (ii = 0; ii < m; ii++) {
-    		sum = 0;
-    		for (jj = (*mat)[ii].begin(); jj != (*mat)[ii].end(); jj++) {
-    			sum += (*jj).second * vec[(*jj).first];
-    			if ((ii != (*jj).first) && isSymmetric) { //not on the main diagonal
-    				//   std::cout << (*ii).first << " ssss "<< (*jj).second <<" tttt "<< x[(*ii).first] << "uuuu" << (*jj).first << std::endl;
-    				resultVec[(*jj).first] += (*jj).second * vec[ii];
-    			}
-    		}
-    		resultVec[ii] = sum;
-    	}
+        for (ii = 0; ii < m; ii++) {
+                sum = 0;
+                for (jj = (*mat)[ii].begin(); jj != (*mat)[ii].end(); jj++) {
+                        sum += (*jj).second * vec[(*jj).first];
+                        if ((ii != (*jj).first) && isSymmetric) { //not on the main diagonal
+                                //   std::cout << (*ii).first << " ssss "<< (*jj).second <<" tttt "<< x[(*ii).first] << "uuuu" << (*jj).first << std::endl;
+                                resultVec[(*jj).first] += (*jj).second * vec[ii];
+                        }
+                }
+                resultVec[ii] = sum;
+        }
 #elif USE_EIGEN
-    	eigenMat->mulitplyVec(false, vec, resultVec, elements);
+        eigenMat->mulitplyVec(false, vec, resultVec, elements);
 #endif
     }
 
     /***********************************************************************************************
      * \brief This function is a fast alternative to the operator overloading alternative
-     * \param[in] 	-- x 			Vector to be multiplied
-     * \param[out] 	-- y 			Result vector
-     * \param[in] 	-- elements 	are the number of entries in the resultant vector (number of rows of the matrix m)
+     * \param[in]       -- x            Vector to be multiplied
+     * \param[out]      -- y            Result vector
+     * \param[in]       -- elements     are the number of entries in the resultant vector (number of rows of the matrix m)
      * \author Chenshen Wu
      ***********/
     void transposeMulitplyVec(T* x, T* y, const size_t elements) { //Computes y=A*x
 
-    	assert(x != NULL);
-    	assert(y != NULL);
-    	assert(elements >= 0);
+        assert(x != NULL);
+        assert(y != NULL);
+        assert(elements >= 0);
 
-    	// Formulating the vectors of the sparse matrix
-    	determineCSR();
+        // Formulating the vectors of the sparse matrix
+        determineCSR();
 #ifdef USE_INTEL_MKL
-    	if (this->m != elements)
-    		assert(0);
-    	if (isSymmetric) {
-    		mulitplyVec(true, x, y, elements);
-    		return;
-    	}
+        if (this->m != elements)
+                assert(0);
+        if (isSymmetric) {
+                mulitplyVec(true, x, y, elements);
+                return;
+        }
 
-    	size_t iter;
-    	for (iter = 0; iter < this->n; iter++) {
-    		y[iter] = 0;
-    	}
+        size_t iter;
+        for (iter = 0; iter < this->n; iter++) {
+                y[iter] = 0;
+        }
 
-    	row_iter ii;
-    	col_iter jj;
+        row_iter ii;
+        col_iter jj;
 
-    	for (ii = 0; ii < m; ii++)
-    		for (jj = (*mat)[ii].begin(); jj != (*mat)[ii].end(); jj++)
-    			y[(*jj).first] += (*jj).second * x[ii];
+        for (ii = 0; ii < m; ii++)
+                for (jj = (*mat)[ii].begin(); jj != (*mat)[ii].end(); jj++)
+                        y[(*jj).first] += (*jj).second * x[ii];
 #elif USE_EIGEN
-    	eigenMat->mulitplyVec(true, x, y, elements);
+        eigenMat->mulitplyVec(true, x, y, elements);
 #endif
 
     }
@@ -487,134 +487,134 @@ public:
 
     /***********************************************************************************************
      * \brief This function returns the sum of a requested row of the sparse matrix
-     * \param[in] 	-- row 			Row number of the sparse matrix for which sum should be obtained
-     * \param[out] 	-- sum 			Sum of the row'th row.
+     * \param[in]       -- row                  Row number of the sparse matrix for which sum should be obtained
+     * \param[out]      -- sum                  Sum of the row'th row.
      * \author Aditya Ghantasala
      ***********/
     T getRowSum(size_t row) { //Computes y=A*x
-    	// Checking if the row requested is with in the limits
-    	assert(row <= this->m);
-    	T sum = 0.0;
+        // Checking if the row requested is with in the limits
+        assert(row <= this->m);
+        T sum = 0.0;
 
-    	// Formulating the vectors of the sparse matrix
-    	determineCSR();
+        // Formulating the vectors of the sparse matrix
+        determineCSR();
 
 #ifdef USE_INTEL_MKL
-    	if (isSymmetric) {
-    		// TODO Check how to return the right value for a symmetric matrix.
-    	}
-    	col_iter jj;
+        if (isSymmetric) {
+                // TODO Check how to return the right value for a symmetric matrix.
+        }
+        col_iter jj;
 
-   		for (jj = (*mat)[row].begin(); jj != (*mat)[row].end(); jj++)
-    		sum += (*jj).second;
+        for (jj = (*mat)[row].begin(); jj != (*mat)[row].end(); jj++)
+                sum += (*jj).second;
 #elif USE_EIGEN
-   		eigenMat->getRowSum(row);
+        eigenMat->getRowSum(row);
 #endif
-   		return sum;
+        return sum;
     }
 
     bool isRowEmpty(size_t row) {
 #ifdef USE_INTEL_MKL
-    	if((*mat)[row].begin() == (*mat)[row].end())
-    		return true;
-		return false;
+        if((*mat)[row].begin() == (*mat)[row].end())
+                return true;
+                return false;
 #elif USE_EIGEN
-		return eigenMat->isRowEmpty(row);
+        return eigenMat->isRowEmpty(row);
 #endif
     }
 
 
     /***********************************************************************************************
      * \brief This function deletes or resets a whole row in sparse matrix.
-     * \param[in] 	-- row 			Row number of the sparse matrix for which should be deleted.
+     * \param[in]     -- row                    Row number of the sparse matrix for which should be deleted.
      * \author Aditya Ghantasala
      * \ edit Altug Emiroglu : when a row is deleted isFactorized flag is set to false
      ***********/
     void deleteRow(size_t row){
 #ifdef USE_INTEL_MKL
-    	(*mat)[row].clear();
+        (*mat)[row].clear();
 #elif USE_EIGEN
-    	eigenMat->deleteRow(row);
+        eigenMat->deleteRow(row);
 #endif
     }
 
 
 //    /***********************************************************************************************
 //     * \brief This function resizes the sparse matrix to given sizes
-//     * \param[in] startRow 			- Start row of the sub matrix required.
-//     * \param[in] startCol 			- Start Column of the sub matrix required.
-//     * \param[in] numRows 			- Number of rows from the startRow.
-//     * \param[in] numColumns 		- Number of columns from the startCol
+//     * \param[in] startRow                    - Start row of the sub matrix required.
+//     * \param[in] startCol                    - Start Column of the sub matrix required.
+//     * \param[in] numRows                     - Number of rows from the startRow.
+//     * \param[in] numColumns                  - Number of columns from the startCol
 //     * \author Aditya Ghantasala
 //     ***********/
 //    void resize(long int startRow, long int startCol, long int numRows, long int numColumns) {
 //
-//    	for(int i=startRow; i<startRow+numRows; i++){
-//    		for(int j= startCol; j<startCol+numColumns; j++){
-//    			col_iter jj;
-//    			jj = (*mat)[i].find(j);
-//    			(*mat)[i].erase(jj);
-//    		}
-//    	}
+//      for(int i=startRow; i<startRow+numRows; i++){
+//              for(int j= startCol; j<startCol+numColumns; j++){
+//                      col_iter jj;
+//                      jj = (*mat)[i].find(j);
+//                      (*mat)[i].erase(jj);
+//              }
+//      }
 //    }
 
 
     /***********************************************************************************************
      * \brief This function multiplies the whole row of the sparse matrix with a given number
-     * \param[in] 	-- row 			Row number of the sparse matrix for which should be multiplied with.
-     * \param[in] 	-- face 		factor with which the row should be multiplied.
+     * \param[in]       -- row                  Row number of the sparse matrix for which should be multiplied with.
+     * \param[in]       -- face                 factor with which the row should be multiplied.
      * \author Aditya Ghantasala
      ***********/
     void multiplyRowWith(size_t row, T fact) { //Computes y=A*x
-    	// Checking if the row requested is with in the limits
-    	assert(row <= this->m);
-    	// Formulating the vectors of the sparse matrix
-    	determineCSR();
+        // Checking if the row requested is with in the limits
+        assert(row <= this->m);
+        // Formulating the vectors of the sparse matrix
+        determineCSR();
 
 #ifdef USE_INTEL_MKL
-    	if (isSymmetric) {
-    		// TODO Check how to return the right value for a symmetric matrix.
-    	}
-    	col_iter jj;
-    	T dum;
-   		for (jj = (*mat)[row].begin(); jj != (*mat)[row].end(); jj++){
-    		dum = (*jj).second;
-    		(*jj).second = dum * fact;
-   		}
+        if (isSymmetric) {
+                // TODO Check how to return the right value for a symmetric matrix.
+        }
+        col_iter jj;
+        T dum;
+        for (jj = (*mat)[row].begin(); jj != (*mat)[row].end(); jj++){
+                dum = (*jj).second;
+                (*jj).second = dum * fact;
+        }
 #elif USE_EIGEN
-   		eigenMat->multiplyRowWith(row, fact);
+        eigenMat->multiplyRowWith(row, fact);
 #endif
 
     }
 
     /***********************************************************************************************
      * \brief This function performs the prepare of a solution
-     * \param[in]  	-- x pointer to solution vector
-     * \param[out] 	-- b pointer to rhs vector
+     * \param[in]       -- x pointer to solution vector
+     * \param[out]      -- b pointer to rhs vector
      * \return std vectordetermineCSR
      * \author Stefan Sicklinger
      * \ȩdit Aditya Ghantasala
      ***********/
     void solve(T* x, T* b) { //Computes x=A^-1 *b
-	
+
         assert(x != NULL);
         assert(b != NULL);
 
-    	if(!isFactorized){
+        if(!isFactorized){
 #ifdef USE_INTEL_MKL
-    		factorize();
+                factorize();
 #elif USE_EIGEN
-    		eigenMat->factorize();
+                eigenMat->factorize();
 #endif
-    		isFactorized = true;
+                isFactorized = true;
         }
 
-    	// Constructing the sparse matrix entities
-    	determineCSR();
+        // Constructing the sparse matrix entities
+        determineCSR();
 #ifdef USE_INTEL_MKL
-    	intelMKL->solve(isSymmetric, m, &values[0], &((*rowIndex)[0]), &columns[0], x, b);
+        intelMKL->solve(isSymmetric, m, &values[0], &((*rowIndex)[0]), &columns[0], x, b);
 #elif USE_EIGEN
-    	eigenMat->solve(x, b);
+        eigenMat->solve(x, b);
 #endif
     }
 
@@ -624,13 +624,13 @@ public:
      * \ȩdit Aditya Ghantasala
      ***********/
     void factorize() {
-    	// Constructing the sparse matrix entities
+        // Constructing the sparse matrix entities
 #ifdef USE_INTEL_MKL
-   	determineCSR();
-  	intelMKL->factorize(isSymmetric, m, &values[0], &((*rowIndex)[0]), &columns[0]);
+        determineCSR();
+        intelMKL->factorize(isSymmetric, m, &values[0], &((*rowIndex)[0]), &columns[0]);
 #elif USE_EIGEN
-    determineCSR();
-  	eigenMat->factorize();
+        determineCSR();
+        eigenMat->factorize();
 #endif
 
     }
@@ -638,41 +638,41 @@ public:
 
     /***********************************************************************************************
      * \brief This function resizes the sparse matrix to given sizes
-     * \param[in] startRow 			- Start row of the sub matrix required.
-     * \param[in] startCol 			- Start Column of the sub matrix required.
-     * \param[in] numRows 			- Number of rows from the startRow.
-     * \param[in] numColumns 		- Number of columns from the startCol
+     * \param[in] startRow                      - Start row of the sub matrix required.
+     * \param[in] startCol                      - Start Column of the sub matrix required.
+     * \param[in] numRows                       - Number of rows from the startRow.
+     * \param[in] numColumns                    - Number of columns from the startCol
      * \author Aditya Ghantasala
      ***********/
     void resize(long int startRow, long int startCol, long int numRows, long int numColumns) {
-    	// Constructing the sparse matrix entities
+        // Constructing the sparse matrix entities
 #ifdef USE_INTEL_MKL
-    	for(int i=startRow; i<startRow+numRows; i++){
-    		for(int j= startCol; j<startCol+numColumns; j++){
-    			col_iter jj;
-    			jj = (*mat)[i].find(j);
-    			(*mat)[i].erase(jj);
-    		}
-    	}
+        for(int i=startRow; i<startRow+numRows; i++){
+                for(int j= startCol; j<startCol+numColumns; j++){
+                        col_iter jj;
+                        jj = (*mat)[i].find(j);
+                        (*mat)[i].erase(jj);
+                }
+        }
 #elif USE_EIGEN
-  	eigenMat->resize(startRow, startCol, numRows, numColumns);
+        eigenMat->resize(startRow, startCol, numRows, numColumns);
 #endif
     }
 
 
-	/***********************************************************************************************
-	 * \brief This function clean Pardiso
-	 * \author Stefan Sicklinger
-	 * \edit Aditya Ghantasala
-	 ***********/
+        /***********************************************************************************************
+         * \brief This function clean Pardiso
+         * \author Stefan Sicklinger
+         * \edit Aditya Ghantasala
+         ***********/
     void reset(){
 #ifdef USE_INTEL_MKL
-    	intelMKL->resetPardiso(&values[0], &((*rowIndex)[0]), &columns[0] );
-		values.clear();
-		columns.clear();
-		(*rowIndex).clear();
+        intelMKL->resetPardiso(&values[0], &((*rowIndex)[0]), &columns[0] );
+        values.clear();
+        columns.clear();
+        (*rowIndex).clear();
 #elif USE_EIGEN
-		// TODO Checkk what to do in case of Eigen
+        // TODO Check what to do in case of Eigen
 #endif
     }
 
@@ -763,7 +763,7 @@ public:
         ofs << std::scientific;
         for (ii_counter = 0; ii_counter < m; ii_counter++) {
             for (jj_counter = 0; jj_counter < n; jj_counter++) {
-            	if(jj_counter!=0) ofs<<" ";
+                if(jj_counter!=0) ofs<<" ";
                 if(isSymmetric) {
                     if(ii_counter<=jj_counter) {
                         ofs<<(this->operator()(ii_counter,jj_counter));
@@ -783,8 +783,8 @@ public:
     }
     /***********************************************************************************************
      * \brief This prints the matrix in sparse format (i,j)->v in a file.
-     *  	The offset can be set to transfer from C-indexing[0] to Matlab[1]
-     *  	Can be read in Matlab by M=dlmread('filename'); followed by M=spconvert(M);
+     *          The offset can be set to transfer from C-indexing[0] to Matlab[1]
+     *          Can be read in Matlab by M=dlmread('filename'); followed by M=spconvert(M);
      * \author Fabien Pean
      ***********/
     void printCSRToFile(std::string filename, int offset=0) {
@@ -798,9 +798,9 @@ public:
                 ofs << (*jj).first + offset << ' ';
                 ofs << (*jj).second << std::endl;
                 if(isSymmetric && ii != (*jj).first) {
-                	ofs << (*jj).first + offset << ' ';
-                	ofs << ii + offset << ' ';
-                	ofs << (*jj).second << std::endl;
+                        ofs << (*jj).first + offset << ' ';
+                        ofs << ii + offset << ' ';
+                        ofs << (*jj).second << std::endl;
                 }
             }
         }
@@ -851,19 +851,18 @@ private:
 
 #ifdef USE_EIGEN
     void makeFullMatrix(){
-    	if(!isFull){
-    	if(isSymmetric){
-    		for(int i=0; i<m; i++){
-    			for(int j=0; j<n; j++){
-    				(*eigenMat)(j,i) = (*eigenMat)(i,j);
-    			}
-    		}
-    	}
-    	}
+        if(!isFull){
+                if(isSymmetric){
+                        for(int i=0; i<m; i++){
+                                for(int j=0; j<n; j++){
+                                       (*eigenMat)(j,i) = (*eigenMat)(i,j);
+                                }
+                        }
+                }
+        }
     }
 
 #endif
-
 
 };
 
@@ -873,6 +872,5 @@ int EMPIRE::MathLibrary::SparseMatrix<T>::clearCount = 0;
 
 }
 }
-
 
 #endif /* MATRIXVECTORMATH_H_ */
