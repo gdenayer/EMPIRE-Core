@@ -27,13 +27,13 @@ set( CMAKE_VERBOSE_MAKEFILE off )
 
 #set( CMAKE_VERBOSE_MAKEFILE on )
 
-IF( (${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")) 
+IF( (${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64"))
     enable_language(Fortran OPTIONAL)
     MESSAGE("EMPIRE is going to be configured for Linux x86_64!")
-ELSEIF( (${CMAKE_SYSTEM_NAME} MATCHES "Windows" AND ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "AMD64")) 
-    MESSAGE("EMPIRE is going to be configured for Windows x64!")	
-ELSE() 
-    MESSAGE(FATAL_ERROR "EMPIRE is supported on Linux x86_64 and Windows x64 only")	
+ELSEIF( (${CMAKE_SYSTEM_NAME} MATCHES "Windows" AND ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "AMD64"))
+    MESSAGE("EMPIRE is going to be configured for Windows x64!")
+ELSE()
+    MESSAGE(FATAL_ERROR "EMPIRE is supported on Linux x86_64 and Windows x64 only")
 ENDIF()
 #------------------------------------------------------------------------------------#
 # 1. Options
@@ -84,21 +84,21 @@ macro_ensure_out_of_source_build("In source build is not allowed for ${PROJECT_N
 IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND "${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
   # using Intel C/C++
   SET(USE_INTEL_COMPILERS_MKL_IMPI_LINUX ON)
-  MESSAGE("C compiler is ${CMAKE_C_COMPILER_ID} and has version ${CMAKE_C_COMPILER_VERSION} \nC++ compiler is ${CMAKE_CXX_COMPILER_ID} and has version ${CMAKE_CXX_COMPILER_VERSION} " ) 
+  MESSAGE("C compiler is ${CMAKE_C_COMPILER_ID} and has version ${CMAKE_C_COMPILER_VERSION} \nC++ compiler is ${CMAKE_CXX_COMPILER_ID} and has version ${CMAKE_CXX_COMPILER_VERSION} " )
 ELSEIF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM" AND "${CMAKE_C_COMPILER_ID}" STREQUAL "IntelLLVM")
   # using IntelLLVM C/C++
   SET(USE_INTELLLVM_COMPILERS_MKL_IMPI_LINUX ON)
-  MESSAGE("C compiler is ${CMAKE_C_COMPILER_ID} and has version ${CMAKE_C_COMPILER_VERSION} \nC++ compiler is ${CMAKE_CXX_COMPILER_ID} and has version ${CMAKE_CXX_COMPILER_VERSION} " ) 
+  MESSAGE("C compiler is ${CMAKE_C_COMPILER_ID} and has version ${CMAKE_C_COMPILER_VERSION} \nC++ compiler is ${CMAKE_CXX_COMPILER_ID} and has version ${CMAKE_CXX_COMPILER_VERSION} " )
 ELSEIF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC" AND "${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
   # using MSVC
   SET(USE_INTEL_COMPILERS_MKL_MSMPI_WINDOWS ON)
-  MESSAGE("C compiler is ${CMAKE_C_COMPILER_ID} and has version ${CMAKE_C_COMPILER_VERSION} \nC++ compiler is ${CMAKE_CXX_COMPILER_ID} and has version ${CMAKE_CXX_COMPILER_VERSION} " ) 
-  MESSAGE("As OpenMP 3.0 and VLA (C99) is used in EMPIRE you need to switch to Intel Compiler in Visual Studio" ) 
+  MESSAGE("C compiler is ${CMAKE_C_COMPILER_ID} and has version ${CMAKE_C_COMPILER_VERSION} \nC++ compiler is ${CMAKE_CXX_COMPILER_ID} and has version ${CMAKE_CXX_COMPILER_VERSION} " )
+  MESSAGE("As OpenMP 3.0 and VLA (C99) is used in EMPIRE you need to switch to Intel Compiler in Visual Studio" )
 ELSEIF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
    SET(USE_GNU_COMPILERS_EINGEN_LINUX ON)
-   MESSAGE("C compiler is ${CMAKE_C_COMPILER_ID} and has version ${CMAKE_C_COMPILER_VERSION} \nC++ compiler is ${CMAKE_CXX_COMPILER_ID} and has version ${CMAKE_CXX_COMPILER_VERSION} " ) 
+   MESSAGE("C compiler is ${CMAKE_C_COMPILER_ID} and has version ${CMAKE_C_COMPILER_VERSION} \nC++ compiler is ${CMAKE_CXX_COMPILER_ID} and has version ${CMAKE_CXX_COMPILER_VERSION} " )
 ELSE()
-  MESSAGE(FATAL_ERROR "Your CXX compiler is ${CMAKE_CXX_COMPILER_ID} and your C compiler is ${CMAKE_C_COMPILER_ID} they are not supported by the build system yet")	
+  MESSAGE(FATAL_ERROR "Your CXX compiler is ${CMAKE_CXX_COMPILER_ID} and your C compiler is ${CMAKE_C_COMPILER_ID} they are not supported by the build system yet")
 ENDIF()
 #------------------------------------------------------------------------------------#
 
@@ -107,10 +107,14 @@ IF (${USE_GNU_COMPILERS_EINGEN_LINUX})
   SET (CMAKE_C_COMPILER "mpic++")
   SET (CMAKE_CXX_COMPILER "mpic++")
   #Let the source code know
-  add_definitions(-DUSE_EIGEN) 
+  add_definitions(-DUSE_EIGEN)
 ENDIF()
 
 # Set Intel Compiler & MKL
+# set the here the different MKL options
+# set(MKL_THREADING sequential)
+# intel_lp64 is required! intel_ilp64 leads to crashes
+set(MKL_INTERFACE_FULL intel_lp64)
 IF (${USE_INTEL_COMPILERS_MKL_IMPI_LINUX})
   SET (CMAKE_C_COMPILER "mpiicc")
   SET (CMAKE_CXX_COMPILER "mpiicpc")
@@ -121,12 +125,12 @@ IF (${USE_INTEL_COMPILERS_MKL_IMPI_LINUX})
     add_definitions(-DUSE_EIGEN)
     IF (${USE_EIGEN_ITERATIVE})
       add_definitions(-DEIGEN_ITERATIVE)
-    ENDIF() 
+    ENDIF()
   ELSE()
-    find_package(MKL REQUIRED)
+    MESSAGE("Configuring MKL...")
+    find_package(MKL CONFIG REQUIRED)
     add_definitions(-DUSE_INTEL_MKL)
   ENDIF()
-  
 ENDIF()
 
 IF (${USE_INTELLLVM_COMPILERS_MKL_IMPI_LINUX})
@@ -139,12 +143,12 @@ IF (${USE_INTELLLVM_COMPILERS_MKL_IMPI_LINUX})
     add_definitions(-DUSE_EIGEN)
     IF (${USE_EIGEN_ITERATIVE})
       add_definitions(-DEIGEN_ITERATIVE)
-    ENDIF() 
+    ENDIF()
   ELSE()
+    MESSAGE("Configuring MKL...")
     find_package(MKL CONFIG REQUIRED)
     add_definitions(-DUSE_INTEL_MKL)
   ENDIF()
-  
 ENDIF()
 
 
@@ -166,25 +170,28 @@ ENDIF()
 add_definitions(-DFLANN) # TEMP
 add_definitions(-DMPICH_IGNORE_CXX_SEEK)
 #------------------------------------------------------------------------------------#
-# Set Compiler flags and Linker flags (CMAKE_BUILD_TYPE is not used!) 
+# Set Compiler flags and Linker flags (CMAKE_BUILD_TYPE is not used!)
 ## Here INTEL specific flags are taken care for
 IF (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM") AND ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "IntelLLVM"))
 ## This is for all compilers
     check_c_compiler_flag(-xHost   CHECKXHOST)
     check_cxx_compiler_flag(-xHost CHECKXHOST)
-	SET (CMAKE_C_FLAGS "-xHost -std=c99 -fPIC")
-	SET (CMAKE_CXX_FLAGS "-xHost -fPIC")
+    # for debugging purposes
+    # SET (CMAKE_C_FLAGS "-g -debug -fsanitize=address -std=c99 -fPIC")
+    # SET (CMAKE_CXX_FLAGS "-g -debug -fsanitize=address -fPIC")
+    SET (CMAKE_C_FLAGS "-xHost -std=c99 -fPIC")
+    SET (CMAKE_CXX_FLAGS "-xHost -fPIC")
 ENDIF()
 ## Here Intel Windows specific flags are taken care for
 IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC" AND "${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
-	SET (CMAKE_C_FLAGS "/QxHost /Qstd=c99")
-	SET (CMAKE_CXX_FLAGS "/QxHost /Qstd=c++11")
+    SET (CMAKE_C_FLAGS "/QxHost /Qstd=c99")
+    SET (CMAKE_CXX_FLAGS "/QxHost /Qstd=c++11")
 ENDIF()
 
 IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 ## This is for all compilers
-	SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -lstdc++ -fPIC")
-	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -lstdc++ -fPIC")
+    SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 ENDIF()
 
 # HACK for mapperlib
