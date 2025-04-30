@@ -73,10 +73,6 @@ Emperor::Emperor() {
 }
 
 Emperor::~Emperor() {
-    for (map<string, ClientCode*>::iterator it = nameToClientCodeMap.begin();
-            it != nameToClientCodeMap.end(); it++) {
-        delete it->second;
-    }
     for (map<string, DataOutput*>::iterator it = nameToDataOutputMap.begin();
             it != nameToDataOutputMap.end(); it++) {
         delete it->second;
@@ -87,6 +83,10 @@ Emperor::~Emperor() {
     }
     for (map<string, MapperAdapter*>::iterator it = nameToMapperMap.begin();
             it != nameToMapperMap.end(); it++) {
+        delete it->second;
+    }
+    for (map<string, ClientCode*>::iterator it = nameToClientCodeMap.begin();
+            it != nameToClientCodeMap.end(); it++) {
         delete it->second;
     }
     for (map<string, AbstractCouplingAlgorithm*>::iterator it = nameToCouplingAlgorithmMap.begin();
